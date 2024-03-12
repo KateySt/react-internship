@@ -6,8 +6,7 @@ import { Provider } from 'react-redux';
 import { store } from 'Store/store';
 import axios from 'axios';
 
-axios.defaults.baseURL = process.env.HOST_BACK;
-
+axios.defaults.baseURL = process.env.REACT_APP_HOST_BACK as string;
 axios.interceptors.response.use(function(response) {
   return response;
 }, function(error) {
