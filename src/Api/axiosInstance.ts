@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { User } from 'Types/User';
+import { ErrorResponse } from 'Types/ErrorResponse';
 
 axios.defaults.baseURL = process.env.REACT_APP_HOST_BACK as string;
 
@@ -35,12 +36,6 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
-interface ErrorResponse {
-  data: any;
-  status: number;
-  config?: AxiosRequestConfig;
-}
 
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
