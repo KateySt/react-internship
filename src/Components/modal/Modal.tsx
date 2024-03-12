@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { ModalProps } from '../../Types/ModalProps'
+import { ModalProps } from 'Types/ModalProps'
 
 const Modal: FC<ModalProps> = ({ isOpen, onClose, children }) => {
     if (!isOpen) return null
