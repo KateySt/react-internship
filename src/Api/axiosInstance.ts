@@ -1,10 +1,14 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { User } from 'Types/User';
 import { ErrorResponse } from 'Types/ErrorResponse';
 
-axios.defaults.baseURL = process.env.REACT_APP_HOST_BACK as string;
+const instance: AxiosInstance = axios.create({
+  baseURL: process.env.REACT_APP_HOST_BACK as string,
+  timeout: 5000,
+  headers: { Accept: 'application/json' },
+});
 
-axios.interceptors.request.use((config) => {
+instance.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -12,26 +16,32 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   (res: AxiosResponse) => res,
   (error: AxiosError<ErrorResponse>) => {
-    const { data, status, config } = error.response!;
-    switch (status) {
-      case 400:
-        console.error('Bad request:', data);
-        break;
-      case 401:
-        console.error('Unauthorized');
-        break;
-      case 404:
-        console.error('Not found:', config?.url);
-        break;
-      case 500:
-        console.error('Server error:', data);
-        break;
-      default:
-        console.error('Unknown error occurred');
-        break;
+    if (error.response) {
+      const { data, status, config } = error.response;
+      switch (status) {
+        case 400:
+          console.error('Bad request:', data);
+          break;
+        case 401:
+          console.error('Unauthorized');
+          break;
+        case 404:
+          console.error('Not found:', config?.url);
+          break;
+        case 500:
+          console.error('Server error:', data);
+          break;
+        default:
+          console.error('Unknown error occurred');
+          break;
+      }
+    } else if (error.request) {
+      console.error('Request made but no response received');
+    } else {
+      console.error('Error in making request:', error.message);
     }
     return Promise.reject(error);
   },
@@ -40,11 +50,11 @@ axios.interceptors.response.use(
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
 const request = {
-  get: <T>(url: string, config?: AxiosRequestConfig) => axios.get<T>(url, config).then(responseBody),
+  get: <T>(url: string, config?: AxiosRequestConfig) => instance.get<T>(url, config).then(responseBody),
   post: <T>(url: string, body: any, config?: AxiosRequestConfig) =>
-    axios.post<T>(url, body, config).then(responseBody),
-  delete: <T>(url: string, config?: AxiosRequestConfig) => axios.delete<T>(url, config).then(responseBody),
-  put: <T>(url: string, body: any, config?: AxiosRequestConfig) => axios.put<T>(url, body, config).then(responseBody),
+    instance.post<T>(url, body, config).then(responseBody),
+  delete: <T>(url: string, config?: AxiosRequestConfig) => instance.delete<T>(url, config).then(responseBody),
+  put: <T>(url: string, body: any, config?: AxiosRequestConfig) => instance.put<T>(url, body, config).then(responseBody),
 };
 
 const test = {
