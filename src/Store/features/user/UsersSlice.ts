@@ -2,15 +2,18 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from 'Types/User';
 import { AppDispatch, RootState } from '../../store';
 import api from 'Api/axiosInstance';
+import { UserList } from 'Types/UserList';
 
 export interface UserState {
   user: User,
   accessToken: string | null;
+  users: UserList,
 }
 
 const initialState: UserState = {
   user: {} as User,
   accessToken: null,
+  users: {} as UserList,
 };
 
 export const UsersSlice = createSlice({
@@ -23,17 +26,26 @@ export const UsersSlice = createSlice({
     setToken: (state, action) => {
       state.accessToken = action.payload;
     },
+    setUsers: (state, action: PayloadAction<UserList>) => {
+      state.users = action.payload;
+    },
   },
 });
 
-export const { setUser, setToken } = UsersSlice.actions;
+export const { setUser, setToken, setUsers } = UsersSlice.actions;
 
 export const selectUser = (state: RootState) => state.users.user;
+export const selectUsers = (state: RootState) => state.users.users;
 export const selectToken = (state: RootState) => state.users.accessToken;
 
 export const getMe = () => async (dispatch: AppDispatch) => {
   await api.users.getMe().then((el: any) => dispatch(setUser(el.result)));
 };
+
+export const getListUsersAsync = (param: object) => async (dispatch: AppDispatch) => {
+  await api.users.list(param).then((el: any) => dispatch(setUsers(el.result)));
+};
+
 export const setTokenAsync = (email: string, password: string) => async (dispatch: AppDispatch) => {
   await api.users.login({ user_email: email, user_password: password })
     .then((el: any) => dispatch(setToken(el.result.access_token)));
