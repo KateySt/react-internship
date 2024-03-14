@@ -10,7 +10,7 @@ const LogoutButton = () => {
 
   const handleLogout = async () => {
     await logout({ logoutParams: { returnTo: window.location.origin } });
-    localStorage.removeItem('token');
+    localStorage.clear();
     dispatch(setToken(null));
   };
 
