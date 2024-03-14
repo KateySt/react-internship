@@ -1,13 +1,22 @@
-import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from '@mui/material';
+import { useAppDispatch } from 'Store/hooks';
+import { setToken } from 'Store/features/user/UsersSlice';
 
 const LogoutButton = () => {
   const { logout } = useAuth0();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = async () => {
+    await logout({ logoutParams: { returnTo: window.location.origin } });
+    localStorage.removeItem('token');
+    dispatch(setToken(null));
+  };
 
   return (
-    <Button color="secondary" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
-      Log Out
+    <Button color="inherit" onClick={handleLogout}>
+      Logout
     </Button>
   );
 };

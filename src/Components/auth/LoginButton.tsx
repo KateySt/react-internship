@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 
 const LoginButton = () => {
   const { loginWithRedirect } = useAuth0();
-  return <Button color="secondary" onClick={() => loginWithRedirect()}>Login with social media</Button>;
+  return<Button color="secondary" onClick={() => loginWithRedirect()}>Auth0</Button>;
 };
 
 export default LoginButton;
