@@ -14,6 +14,7 @@ function App() {
       domain={domain}
       clientId={clientId}
       authorizationParams={{
+        audience: process.env.REACT_APP_AUDIENCE as string,
         redirect_uri: window.location.origin,
       }}>
       <Provider store={store}>
