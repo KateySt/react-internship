@@ -9,9 +9,14 @@ import Users from '../user/moduls/Users';
 import Companies from '../company/moduls/Companies';
 import NotFoundPage from '../error';
 
-const AppRoutes = () => {
+const AppRoutes: React.FC = () => {
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
+
+  useEffect(() => {
+    if (!token) return;
+    localStorage.setItem('token', token);
+  }, [token]);
 
   useEffect(() => {
     let tokenData = localStorage.getItem('token');

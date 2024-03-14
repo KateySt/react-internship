@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -7,20 +7,13 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import './Header.css';
-import { useAppDispatch, useAppSelector } from 'Store/hooks';
-import { getUser, selectToken, selectUser } from 'Store/features/user/UsersSlice';
+import { useAppSelector } from 'Store/hooks';
+import { selectToken, selectUser } from 'Store/features/user/UsersSlice';
 import LogoutButton from '../auth/LogoutButton';
 
 const Header = () => {
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (!token) return;
-    dispatch(getUser());
-  }, [token]);
-
   return (
     <AppBar position="static" color="secondary">
       <Toolbar>

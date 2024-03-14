@@ -31,8 +31,8 @@ export const { setUser, setToken } = UsersSlice.actions;
 export const selectUser = (state: RootState) => state.users.user;
 export const selectToken = (state: RootState) => state.users.accessToken;
 
-export const getUser = () => async (dispatch: AppDispatch) => {
-  await api.users.getMe().then((el) => dispatch(setUser(el.result)));
+export const getMe = () => async (dispatch: AppDispatch) => {
+  await api.users.getMe().then((el: any) => dispatch(setUser(el.result)));
 };
 export const setTokenAsync = (email: string, password: string) => async (dispatch: AppDispatch) => {
   await api.users.login({ user_email: email, user_password: password })

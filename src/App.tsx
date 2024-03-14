@@ -7,6 +7,7 @@ import AppRoutes from 'Pages/router/AppRoutes';
 
 const domain = process.env.REACT_APP_DOMAIN as string;
 const clientId = process.env.REACT_APP_CLIENT_ID as string;
+const audience = process.env.REACT_APP_AUDIENCE as string;
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        audience: process.env.REACT_APP_AUDIENCE as string,
+        audience: audience,
         redirect_uri: window.location.origin,
       }}>
       <Provider store={store}>

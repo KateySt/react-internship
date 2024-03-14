@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { useAppDispatch } from 'Store/hooks';
-import { setTokenAsync } from 'Store/features/user/UsersSlice';
+import { getMe, setTokenAsync } from 'Store/features/user/UsersSlice';
 import './AuthorizationPage.css';
 import LoginButton from 'Components/auth/LoginButton';
 import { useNavigate } from 'react-router-dom';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import { regExpEmail } from '../../../Utils/regular';
+import { regExpEmail } from 'Utils/regular';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().lowercase().email('Invalid email format').matches(regExpEmail).required('Email is required'),
   password: Yup.string().required('Password is required'),
 });
 
-const AuthorizationPage = () => {
+const AuthorizationPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const handleLogin = async (values: any) => {
     await dispatch(setTokenAsync(values.email, values.password));
+    await dispatch(getMe());
     setIsLogin(true);
   };
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from 'Store/hooks';
-import { creatUserAsync, setTokenAsync } from 'Store/features/user/UsersSlice';
+import { creatUserAsync, getMe, setTokenAsync } from 'Store/features/user/UsersSlice';
 import { User } from 'Types/User';
 import { ErrorMessage, Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -26,6 +26,7 @@ const RegistrationPage = () => {
   const handleRegistration = async (values: User) => {
     await dispatch(creatUserAsync(values));
     await dispatch(setTokenAsync(values.user_email, values.user_password));
+    await dispatch(getMe());
     setIsLogin(true);
   };
 
