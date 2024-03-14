@@ -17,6 +17,7 @@ const Header = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!token) return;
     dispatch(getUser());
   }, [token]);
 
@@ -29,7 +30,7 @@ const Header = () => {
         <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
           My App
         </Typography>
-        {user && `${user.user_email} -- ${user.user_firstname}`}
+        {user.user_email && `${user.user_email} -- ${user.user_firstname}`}
         <Button color="inherit" component={Link} to="/about">About</Button>
         {token ?
           <>
