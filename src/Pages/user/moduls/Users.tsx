@@ -11,11 +11,12 @@ export default function Users() {
   const isLogin = useAppSelector(selectIsLogin);
   return (
     <Routes>
-      {isLogin &&
+      {isLogin ?
         <>
           <Route path="/list" element={<UsersPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </>
+        : <></>
       }
       <Route path="auth" element={<AuthorizationPage />} />
       <Route path="regist" element={<RegistrationPage />} />

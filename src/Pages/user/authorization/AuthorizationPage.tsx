@@ -26,6 +26,7 @@ const AuthorizationPage: React.FC = () => {
     tokenData = await getAccessTokenSilently();
     dispatch(setToken(tokenData));
     await dispatch(getMe());
+    dispatch(setIsLogin(true));
   };
 
   useEffect(() => {
