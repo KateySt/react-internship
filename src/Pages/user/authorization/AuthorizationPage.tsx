@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
-import { getMe, selectIsLogin, setIsLogin, setToken, setTokenAsync } from 'Store/features/user/UsersSlice';
+import { getMe, selectIsLogin, selectToken, setIsLogin, setToken, setTokenAsync } from 'Store/features/user/UsersSlice';
 import './AuthorizationPage.css';
 import LoginButton from 'Components/auth/LoginButton';
 import { useNavigate } from 'react-router-dom';
@@ -20,23 +20,27 @@ const AuthorizationPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const isLogin = useAppSelector(selectIsLogin);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-  let tokenData;
+  const token = useAppSelector(selectToken);
+
   const getToken = async () => {
-    if (!isAuthenticated) return;
-    tokenData = await getAccessTokenSilently();
-    dispatch(setToken(tokenData));
-    await dispatch(getMe());
-    dispatch(setIsLogin(true));
+    if (isAuthenticated) {
+      const accessToken = await getAccessTokenSilently();
+      dispatch(setToken(accessToken));
+    }
   };
 
   useEffect(() => {
     getToken();
-  }, [tokenData]);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!token) return;
+    dispatch(getMe());
+    dispatch(setIsLogin(true));
+  }, [token]);
 
   const handleLogin = async (values: any) => {
     await dispatch(setTokenAsync(values.email, values.password));
-    await dispatch(getMe());
-    dispatch(setIsLogin(true));
   };
 
   if (isLogin) {
