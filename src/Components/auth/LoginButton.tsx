@@ -3,8 +3,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from '@mui/material';
 
 const LoginButton = () => {
-  const { loginWithRedirect } = useAuth0();
-  return<Button color="secondary" onClick={() => loginWithRedirect()}>Auth0</Button>;
+  const { loginWithPopup } = useAuth0();
+  return <Button color="secondary" onClick={async () => await loginWithPopup()}>Auth0</Button>;
 };
 
 export default LoginButton;

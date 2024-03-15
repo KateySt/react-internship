@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -8,12 +8,12 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import './Header.css';
 import { useAppSelector } from 'Store/hooks';
-import { selectToken, selectUser } from 'Store/features/user/UsersSlice';
+import { selectIsLogin, selectUser } from 'Store/features/user/UsersSlice';
 import LogoutButton from '../auth/LogoutButton';
 
 const Header = () => {
-  const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
+  const isLogin = useAppSelector(selectIsLogin);
   return (
     <AppBar position="static" color="secondary">
       <Toolbar>
@@ -25,7 +25,7 @@ const Header = () => {
         </Typography>
         {user.user_email && `${user.user_email} -- ${user.user_firstname}`}
         <Button color="inherit" component={Link} to="/about">About</Button>
-        {token ?
+        {isLogin ?
           <>
             <Button color="inherit" component={Link} to="/users/list">Users</Button>
             <Button color="inherit" component={Link} to="/companies">Companies</Button>

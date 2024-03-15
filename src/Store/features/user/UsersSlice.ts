@@ -8,12 +8,14 @@ export interface UserState {
   user: User,
   accessToken: string | null;
   users: UserList,
+  isLogin: boolean;
 }
 
 const initialState: UserState = {
   user: {} as User,
   accessToken: null,
   users: {} as UserList,
+  isLogin: false,
 };
 
 export const UsersSlice = createSlice({
@@ -29,13 +31,17 @@ export const UsersSlice = createSlice({
     setUsers: (state, action: PayloadAction<UserList>) => {
       state.users = action.payload;
     },
+    setIsLogin: (state, action) => {
+      state.isLogin = action.payload;
+    },
   },
 });
 
-export const { setUser, setToken, setUsers } = UsersSlice.actions;
+export const { setUser,setIsLogin, setToken, setUsers } = UsersSlice.actions;
 
 export const selectUser = (state: RootState) => state.users.user;
 export const selectUsers = (state: RootState) => state.users.users;
+export const selectIsLogin = (state: RootState) => state.users.isLogin;
 export const selectToken = (state: RootState) => state.users.accessToken;
 
 export const getMe = () => async (dispatch: AppDispatch) => {
