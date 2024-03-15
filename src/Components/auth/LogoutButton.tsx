@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from '@mui/material';
 import { useAppDispatch } from 'Store/hooks';
-import { setToken } from 'Store/features/user/UsersSlice';
+import { setIsLogin, setToken } from 'Store/features/user/UsersSlice';
 
 const LogoutButton = () => {
   const { logout } = useAuth0();
@@ -12,6 +12,7 @@ const LogoutButton = () => {
     await logout({ logoutParams: { returnTo: window.location.origin } });
     localStorage.clear();
     dispatch(setToken(null));
+    dispatch(setIsLogin(false));
   };
 
   return (

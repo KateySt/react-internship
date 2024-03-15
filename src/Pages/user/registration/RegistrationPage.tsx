@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from 'Store/hooks';
-import { creatUserAsync, getMe, setTokenAsync } from 'Store/features/user/UsersSlice';
+import { useAppDispatch, useAppSelector } from 'Store/hooks';
+import { creatUserAsync, getMe, selectIsLogin, setIsLogin, setTokenAsync } from 'Store/features/user/UsersSlice';
 import { User } from 'Types/User';
 import { ErrorMessage, Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -19,7 +19,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegistrationPage = () => {
-  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const isLogin = useAppSelector(selectIsLogin);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -27,7 +27,7 @@ const RegistrationPage = () => {
     await dispatch(creatUserAsync(values));
     await dispatch(setTokenAsync(values.user_email, values.user_password));
     await dispatch(getMe());
-    setIsLogin(true);
+    dispatch(setIsLogin(true));
   };
 
   if (isLogin) {

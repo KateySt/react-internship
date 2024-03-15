@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, TextField } from '@mui/material';
-import { useAppDispatch } from 'Store/hooks';
-import { getMe, setTokenAsync } from 'Store/features/user/UsersSlice';
+import { useAppDispatch, useAppSelector } from 'Store/hooks';
+import { getMe, selectIsLogin, setIsLogin, setToken, setTokenAsync } from 'Store/features/user/UsersSlice';
 import './AuthorizationPage.css';
 import LoginButton from 'Components/auth/LoginButton';
 import { useNavigate } from 'react-router-dom';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().lowercase().email('Invalid email format').matches(regExpEmail).required('Email is required'),
@@ -15,14 +16,26 @@ const validationSchema = Yup.object().shape({
 });
 
 const AuthorizationPage: React.FC = () => {
-  const [isLogin, setIsLogin] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const isLogin = useAppSelector(selectIsLogin);
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  let tokenData;
+  const getToken = async () => {
+    if (!isAuthenticated) return;
+    tokenData = await getAccessTokenSilently();
+    dispatch(setToken(tokenData));
+    await dispatch(getMe());
+  };
+
+  useEffect(() => {
+    getToken();
+  }, [tokenData]);
 
   const handleLogin = async (values: any) => {
     await dispatch(setTokenAsync(values.email, values.password));
     await dispatch(getMe());
-    setIsLogin(true);
+    dispatch(setIsLogin(true));
   };
 
   if (isLogin) {
