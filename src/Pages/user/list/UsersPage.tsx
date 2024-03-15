@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { getListUsersAsync, selectUsers } from 'Store/features/user/UsersSlice';
 import { Grid, Pagination, Stack } from '@mui/material';
-import UserCard from '../../../Components/cart/UserCard';
+import UserCard from 'Components/cart/UserCard';
 
 const UsersPage = () => {
   const dispatch = useAppDispatch();
