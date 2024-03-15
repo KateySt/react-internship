@@ -9,6 +9,7 @@ export interface UserState {
   accessToken: string | null;
   users: UserList,
   isLogin: boolean;
+  profile: User;
 }
 
 const initialState: UserState = {
@@ -16,6 +17,7 @@ const initialState: UserState = {
   accessToken: null,
   users: {} as UserList,
   isLogin: false,
+  profile: {} as User,
 };
 
 export const UsersSlice = createSlice({
@@ -24,6 +26,9 @@ export const UsersSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+    },
+    setProfile: (state, action: PayloadAction<User>) => {
+      state.profile = action.payload;
     },
     setToken: (state, action) => {
       state.accessToken = action.payload;
@@ -37,15 +42,20 @@ export const UsersSlice = createSlice({
   },
 });
 
-export const { setUser,setIsLogin, setToken, setUsers } = UsersSlice.actions;
+export const { setUser, setProfile, setIsLogin, setToken, setUsers } = UsersSlice.actions;
 
 export const selectUser = (state: RootState) => state.users.user;
+export const selectProfile = (state: RootState) => state.users.profile;
 export const selectUsers = (state: RootState) => state.users.users;
 export const selectIsLogin = (state: RootState) => state.users.isLogin;
 export const selectToken = (state: RootState) => state.users.accessToken;
 
 export const getMe = () => async (dispatch: AppDispatch) => {
   await api.users.getMe().then((el: any) => dispatch(setUser(el.result)));
+};
+
+export const getUser = (id: number) => async (dispatch: AppDispatch) => {
+  await api.users.details(id).then((el: any) => dispatch(setProfile(el.result)));
 };
 
 export const getListUsersAsync = (param: object) => async (dispatch: AppDispatch) => {

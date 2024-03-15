@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { getListUsersAsync, selectUsers } from 'Store/features/user/UsersSlice';
 import { Grid, Pagination, Stack } from '@mui/material';
 import UserCard from 'Components/cart/UserCard';
+import { Link } from 'react-router-dom';
 
 const UsersPage = () => {
   const dispatch = useAppDispatch();
@@ -26,7 +27,9 @@ const UsersPage = () => {
         <>
           <Grid container spacing={2}>
             {users.users.map(user => (
-              <UserCard key={user.user_id} user={user} />
+              <Link to={`/users/profile/${user.user_id}`}>
+                <UserCard key={user.user_id} user={user} />
+              </Link>
             ))}
           </Grid>
           <Stack spacing={2}>
