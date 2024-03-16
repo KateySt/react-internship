@@ -16,7 +16,7 @@ const AppRoutes: React.FC = () => {
   useEffect(() => {
     if (!token) return;
     localStorage.setItem('token', token);
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     let tokenData = localStorage.getItem('token');

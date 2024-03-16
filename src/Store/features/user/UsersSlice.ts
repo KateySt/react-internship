@@ -5,6 +5,7 @@ import { UserList } from 'Types/UserList';
 import { Profile } from 'Types/Profile';
 import { NewUser } from 'Types/NewUser';
 import { User } from 'Types/User';
+import { UpdateUserInfo } from 'Types/UpdateUserInfo';
 
 export interface UserState {
   user: User | Profile,
@@ -12,7 +13,6 @@ export interface UserState {
   users: UserList,
   isLogin: boolean;
   profile: Profile;
-  avatar: any; //Todo type
 }
 
 const initialState: UserState = {
@@ -21,7 +21,6 @@ const initialState: UserState = {
   users: {} as UserList,
   isLogin: false,
   profile: {} as Profile,
-  avatar: null,
 };
 
 export const UsersSlice = createSlice({
@@ -34,32 +33,47 @@ export const UsersSlice = createSlice({
     setProfile: (state, action: PayloadAction<Profile>) => {
       state.profile = action.payload;
     },
-    setToken: (state, action) => {
+    setToken: (state, action: PayloadAction<string | null>) => {
       state.accessToken = action.payload;
     },
     setUsers: (state, action: PayloadAction<UserList>) => {
       state.users = action.payload;
     },
-    setIsLogin: (state, action) => {
+    setIsLogin: (state, action: PayloadAction<boolean>) => {
       state.isLogin = action.payload;
     },
-    setNewAvatar: (state, action) => {
-      state.avatar = action.payload;
+    setNewAvatar: (state, action: PayloadAction<string>) => {
+      (state.user as Profile).user_avatar = action.payload;
+    },
+    setInfo: (state, action: PayloadAction<UpdateUserInfo>) => {
+      state.user = { ...state.user, ...action.payload };
     },
   },
 });
 
-export const { setUser, setNewAvatar, setProfile, setIsLogin, setToken, setUsers } = UsersSlice.actions;
+export const { setUser, setInfo, setNewAvatar, setProfile, setIsLogin, setToken, setUsers } = UsersSlice.actions;
 
 export const selectUser = (state: RootState) => state.users.user;
-export const selectAvatar = (state: RootState) => state.users.avatar;
 export const selectProfile = (state: RootState) => state.users.profile;
 export const selectUsers = (state: RootState) => state.users.users;
 export const selectIsLogin = (state: RootState) => state.users.isLogin;
 export const selectToken = (state: RootState) => state.users.accessToken;
 
-export const setNewAvatarAsync = (avatar: any, id: number) => async (dispatch: AppDispatch) => {
-  await api.users.updateAvatar(avatar, id).then((el: any) => dispatch(setNewAvatar(el.result)));//TODO
+export const setNewAvatarAsync = (avatar: File | null, id: number) => async (dispatch: AppDispatch) => {
+  const formData = new FormData();
+  formData.append('file', avatar as File);
+  await api.users.updateAvatar(formData, id).then((el) => dispatch(setNewAvatar(el.result)));
+};
+
+export const setInfoAsync = (data: UpdateUserInfo, id: number) => async (dispatch: AppDispatch) => {
+  await api.users.updateInfo(data, id).then(() => dispatch(setInfo(data)));
+};
+
+export const setPasswordAsync = (data: {
+  user_password: string,
+  user_password_repeat: string
+}, id: number) => async (dispatch: AppDispatch) => {
+  await api.users.updatePassword(data, id);
 };
 
 export const getMe = () => async (dispatch: AppDispatch) => {

@@ -3,11 +3,12 @@ import { ErrorResponse } from 'Types/ErrorResponse';
 import { Profile } from 'Types/Profile';
 import { UserList } from 'Types/UserList';
 import { NewUser } from 'Types/NewUser';
-import { Answer } from 'Types/Answer';
+import { Response } from 'Types/Response';
+import { UpdateUserInfo } from '../Types/UpdateUserInfo';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
-  timeout: 5000,
+  timeout: 10000,
   headers: { Accept: 'application/json' },
 });
 
@@ -69,12 +70,16 @@ const companies = {
 };
 
 const users = {
-  getMe: () => request.get<any>('/auth/me'),
-  list: (queryParams?: {}) => request.get<Answer<UserList>>('/users', { params: queryParams }),
-  login: (body: {}) => request.post<Answer<{ access_token: string, token_type: string }>>('/auth/login', body),
-  details: (id: number) => request.get<Answer<Profile>>(`/user/${id}`),
-  create: (data: NewUser) => request.post<Answer<{ user_id: number }>>('/user', data),
-  updateAvatar: (data: any, id: number) => request.put<any>(`/user/${id}/update_avatar/`, data),//TODO Type
+  getMe: () => request.get<Response<Profile>>('/auth/me'),
+  list: (queryParams?: {}) => request.get<Response<UserList>>('/users', { params: queryParams }),
+  login: (body: {}) => request.post<Response<{ access_token: string, token_type: string }>>('/auth/login', body),
+  details: (id: number) => request.get<Response<Profile>>(`/user/${id}`),
+  create: (data: NewUser) => request.post<Response<{ user_id: number }>>('/user', data),
+  updateAvatar: (data: FormData, id: number) => request.put<Response<string>>(`/user/${id}/update_avatar`, data),
+  updateInfo: (data: UpdateUserInfo, id: number) =>
+    request.put<Response<{ user_id: number }>>(`/user/${id}/update_info`, data),
+  updatePassword: (data: { user_password: string, user_password_repeat: string }, id: number) =>
+    request.put<Response<{ user_id: number }>>(`/user/${id}/update_password`, data),
 };
 
 const api = {
