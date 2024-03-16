@@ -60,7 +60,7 @@ export const setNewAvatarAsync = (avatar: any, id: number) => async (dispatch: A
   await api.users.updateAvatar(avatar, id).then((el: any) => dispatch(setNewAvatar(el.result)));//TODO
 };
 
-export const getMeAsync = () => async (dispatch: AppDispatch) => {
+export const getMe = () => async (dispatch: AppDispatch) => {
   await api.users.getMe().then((el: any) => dispatch(setUser(el.result)));
 };
 

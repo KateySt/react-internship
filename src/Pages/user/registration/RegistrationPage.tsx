@@ -1,12 +1,12 @@
 import React from 'react';
 import { Box, Button, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
-import { creatUserAsync, getMeAsync, selectIsLogin, setIsLogin, setTokenAsync } from 'Store/features/user/UsersSlice';
+import { creatUserAsync, getMe, selectIsLogin, setIsLogin, setTokenAsync } from 'Store/features/user/UsersSlice';
 import { User } from 'Types/User';
 import { ErrorMessage, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
-import useNavigation from 'Utils/hooks/useNavigation';
 
 const validationSchema = Yup.object().shape({
   user_password: Yup.string().min(8).required('Password is required'),
@@ -20,18 +20,18 @@ const validationSchema = Yup.object().shape({
 
 const RegistrationPage = () => {
   const isLogin = useAppSelector(selectIsLogin);
-  const { navigateToPage, goHome } = useNavigation('/users/auth');
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const handleRegistration = async (values: User) => {
     await dispatch(creatUserAsync(values));
     await dispatch(setTokenAsync(values.user_email, values.user_password));
-    await dispatch(getMeAsync());
+    await dispatch(getMe());
     dispatch(setIsLogin(true));
   };
 
   if (isLogin) {
-    goHome();
+    navigate('/');
   }
 
   return (
@@ -127,7 +127,7 @@ const RegistrationPage = () => {
           </Form>
         )}
       </Formik>
-      <Button color="secondary" onClick={navigateToPage} fullWidth>
+      <Button color="secondary" onClick={() => navigate('/users/auth')} fullWidth>
         Login
       </Button>
     </Box>

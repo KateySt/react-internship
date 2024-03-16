@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { getUserAsync, selectProfile, selectUser } from 'Store/features/user/UsersSlice';
 import { Avatar, Grid, Typography } from '@mui/material';
-import useNavigation from 'Utils/hooks/useNavigation';
 import { IoIosArrowBack } from 'react-icons/io';
 
 const ProfilePage = () => {
@@ -11,7 +10,7 @@ const ProfilePage = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectProfile);
   const user = useAppSelector(selectUser);
-  const { goBack } = useNavigation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getUserAsync(Number(id)));
@@ -21,7 +20,7 @@ const ProfilePage = () => {
     <>
       {profile.user_firstname &&
         <Grid spacing={3} justifyContent="center">
-          <IoIosArrowBack onClick={goBack} size={36} />
+          <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
             {!!profile.user_avatar ? (
               <Avatar alt={profile.user_firstname} src={profile.user_avatar}
