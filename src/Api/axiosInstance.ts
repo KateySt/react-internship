@@ -1,6 +1,9 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { User } from 'Types/User';
 import { ErrorResponse } from 'Types/ErrorResponse';
+import { Profile } from 'Types/Profile';
+import { UserList } from 'Types/UserList';
+import { NewUser } from 'Types/NewUser';
+import { Answer } from 'Types/Answer';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -10,6 +13,7 @@ const instance: AxiosInstance = axios.create({
 
 instance.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+  console.log(token)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -66,11 +70,11 @@ const companies = {
 };
 
 const users = {
-  getMe: () => request.get<User>('/auth/me/'),
-  list: (queryParams?: {}) => request.get<User[]>('/users', { params: queryParams }),
-  login: (body: {}) => request.post('/auth/login/', body),
-  details: (id: number) => request.get<User>(`/user/${id}`),
-  create: (data: User) => request.post<User>('/user', data),
+  getMe: () => request.get('/auth/me/'),
+  list: (queryParams?: {}) => request.get<Answer<UserList>>('/users', { params: queryParams }),
+  login: (body: {}) => request.post<Answer<{ access_token: string }>>('/auth/login/', body),
+  details: (id: number) => request.get<Answer<Profile>>(`/user/${id}`),
+  create: (data: NewUser) => request.post<Answer<{ user_id: number }>>('/user', data),
   updateAvatar: (data: any, id: number) => request.put<any>(`/user/${id}/update_avatar/`, data),//TODO Type
 };
 

@@ -4,7 +4,7 @@ import './UserCard.css';
 import { User } from 'Types/User';
 
 interface UserCardProps {
-  user: User;
+  user: User & { user_avatar: string };
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user }) => {

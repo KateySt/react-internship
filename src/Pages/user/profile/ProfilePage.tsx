@@ -40,11 +40,11 @@ const ProfilePage = () => {
             <Typography variant="body1" color="textSecondary">
               phone: {profile.user_phone}
             </Typography>
-            {user.user_id === profile.user_id ? 'ok' : 'no'}
+
           </Grid>
         </Grid>
       }
     </>
   );
-};
+}; //{user.user_id === profile.user_id ? 'ok' : 'no'}
 export default ProfilePage;

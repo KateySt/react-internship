@@ -3,10 +3,10 @@ import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { creatUserAsync, getMe, selectIsLogin, setIsLogin, setTokenAsync } from 'Store/features/user/UsersSlice';
-import { User } from 'Types/User';
 import { ErrorMessage, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
+import { NewUser } from 'Types/NewUser';
 
 const validationSchema = Yup.object().shape({
   user_password: Yup.string().min(8).required('Password is required'),
@@ -23,7 +23,7 @@ const RegistrationPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const handleRegistration = async (values: User) => {
+  const handleRegistration = async (values: NewUser) => {
     await dispatch(creatUserAsync(values));
     await dispatch(setTokenAsync(values.user_email, values.user_password));
     await dispatch(getMe());
@@ -48,7 +48,7 @@ const RegistrationPage = () => {
       mt={10}
     >
       <Formik
-        initialValues={{} as User}
+        initialValues={{} as NewUser}
         onSubmit={handleRegistration}
         validationSchema={validationSchema}
       >

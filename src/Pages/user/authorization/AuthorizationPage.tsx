@@ -5,7 +5,6 @@ import {
   getMe,
   selectIsLogin,
   selectToken,
-  selectUser,
   setIsLogin,
   setToken,
   setTokenAsync,
@@ -29,7 +28,6 @@ const AuthorizationPage: React.FC = () => {
   const isLogin = useAppSelector(selectIsLogin);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const token = useAppSelector(selectToken);
-  const u = useAppSelector(selectUser);
   const getToken = async () => {
     if (isAuthenticated) {
       const accessToken = await getAccessTokenSilently();
@@ -44,7 +42,6 @@ const AuthorizationPage: React.FC = () => {
   useEffect(() => {
     if (!token) return;
     dispatch(getMe());
-    console.log(u)
     dispatch(setIsLogin(true));
   }, [token]);
 
