@@ -13,7 +13,6 @@ const instance: AxiosInstance = axios.create({
 
 instance.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  console.log(token)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -70,9 +69,9 @@ const companies = {
 };
 
 const users = {
-  getMe: () => request.get('/auth/me/'),
+  getMe: () => request.get<any>('/auth/me'),
   list: (queryParams?: {}) => request.get<Answer<UserList>>('/users', { params: queryParams }),
-  login: (body: {}) => request.post<Answer<{ access_token: string }>>('/auth/login/', body),
+  login: (body: {}) => request.post<Answer<{ access_token: string, token_type: string }>>('/auth/login', body),
   details: (id: number) => request.get<Answer<Profile>>(`/user/${id}`),
   create: (data: NewUser) => request.post<Answer<{ user_id: number }>>('/user', data),
   updateAvatar: (data: any, id: number) => request.put<any>(`/user/${id}/update_avatar/`, data),//TODO Type

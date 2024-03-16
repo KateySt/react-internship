@@ -63,7 +63,7 @@ export const setNewAvatarAsync = (avatar: any, id: number) => async (dispatch: A
 };
 
 export const getMe = () => async (dispatch: AppDispatch) => {
-  await api.users.getMe().then((el: any) => dispatch(setUser(el.result)),);
+  await api.users.getMe().then((el) => dispatch(setUser(el.result)));
 };
 
 export const getUserAsync = (id: number) => async (dispatch: AppDispatch) => {

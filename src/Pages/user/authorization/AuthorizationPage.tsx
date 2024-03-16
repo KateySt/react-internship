@@ -28,6 +28,7 @@ const AuthorizationPage: React.FC = () => {
   const isLogin = useAppSelector(selectIsLogin);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const token = useAppSelector(selectToken);
+
   const getToken = async () => {
     if (isAuthenticated) {
       const accessToken = await getAccessTokenSilently();
@@ -45,7 +46,7 @@ const AuthorizationPage: React.FC = () => {
     dispatch(setIsLogin(true));
   }, [token]);
 
-  const handleLogin = async (values: any) => {
+  const handleLogin = async (values: { email: string, password: string}) => {
     await dispatch(setTokenAsync(values.email, values.password));
   };
 
