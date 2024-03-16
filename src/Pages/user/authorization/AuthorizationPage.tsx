@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
-import { getMe, selectIsLogin, selectToken, setIsLogin, setToken, setTokenAsync } from 'Store/features/user/UsersSlice';
+import { getMeAsync, selectIsLogin, selectToken, setIsLogin, setToken, setTokenAsync } from 'Store/features/user/UsersSlice';
 import './AuthorizationPage.css';
 import LoginButton from 'Components/auth/LoginButton';
-import { useNavigate } from 'react-router-dom';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
 import { useAuth0 } from '@auth0/auth0-react';
+import useNavigation from 'Utils/hooks/useNavigation';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().lowercase().email('Invalid email format').matches(regExpEmail).required('Email is required'),
@@ -16,12 +16,12 @@ const validationSchema = Yup.object().shape({
 });
 
 const AuthorizationPage: React.FC = () => {
-  const navigate = useNavigate();
+  const { navigateToPage, goHome } = useNavigation('/users/regist');
   const dispatch = useAppDispatch();
   const isLogin = useAppSelector(selectIsLogin);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const token = useAppSelector(selectToken);
-
+console.log(token)
   const getToken = async () => {
     if (isAuthenticated) {
       const accessToken = await getAccessTokenSilently();
@@ -35,7 +35,7 @@ const AuthorizationPage: React.FC = () => {
 
   useEffect(() => {
     if (!token) return;
-    dispatch(getMe());
+    dispatch(getMeAsync());
     dispatch(setIsLogin(true));
   }, [token]);
 
@@ -44,7 +44,7 @@ const AuthorizationPage: React.FC = () => {
   };
 
   if (isLogin) {
-    navigate('/');
+    goHome();
   }
 
   return (
@@ -100,7 +100,7 @@ const AuthorizationPage: React.FC = () => {
           </Form>
         )}
       </Formik>
-      <Button color="secondary" onClick={() => navigate('/users/regist')} fullWidth>
+      <Button color="secondary" onClick={navigateToPage} fullWidth>
         Registration
       </Button>
       <LoginButton />

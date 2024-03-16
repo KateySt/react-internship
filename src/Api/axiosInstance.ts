@@ -71,6 +71,7 @@ const users = {
   login: (body: {}) => request.post('/auth/login/', body),
   details: (id: number) => request.get<User>(`/user/${id}`),
   create: (data: User) => request.post<User>('/user', data),
+  updateAvatar: (data: any, id: number) => request.put<any>(`/user/${id}/update_avatar`, data),//TODO Type
 };
 
 const api = {

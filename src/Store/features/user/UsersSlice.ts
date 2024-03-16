@@ -10,6 +10,7 @@ export interface UserState {
   users: UserList,
   isLogin: boolean;
   profile: User;
+  avatar: any; //Todo type
 }
 
 const initialState: UserState = {
@@ -18,6 +19,7 @@ const initialState: UserState = {
   users: {} as UserList,
   isLogin: false,
   profile: {} as User,
+  avatar: null,
 };
 
 export const UsersSlice = createSlice({
@@ -39,22 +41,30 @@ export const UsersSlice = createSlice({
     setIsLogin: (state, action) => {
       state.isLogin = action.payload;
     },
+    setNewAvatar: (state, action) => {
+      state.avatar = action.payload;
+    },
   },
 });
 
-export const { setUser, setProfile, setIsLogin, setToken, setUsers } = UsersSlice.actions;
+export const { setUser, setNewAvatar, setProfile, setIsLogin, setToken, setUsers } = UsersSlice.actions;
 
 export const selectUser = (state: RootState) => state.users.user;
+export const selectAvatar = (state: RootState) => state.users.avatar;
 export const selectProfile = (state: RootState) => state.users.profile;
 export const selectUsers = (state: RootState) => state.users.users;
 export const selectIsLogin = (state: RootState) => state.users.isLogin;
 export const selectToken = (state: RootState) => state.users.accessToken;
 
-export const getMe = () => async (dispatch: AppDispatch) => {
+export const setNewAvatarAsync = (avatar: any, id: number) => async (dispatch: AppDispatch) => {
+  await api.users.updateAvatar(avatar, id).then((el: any) => dispatch(setNewAvatar(el.result)));//TODO
+};
+
+export const getMeAsync = () => async (dispatch: AppDispatch) => {
   await api.users.getMe().then((el: any) => dispatch(setUser(el.result)));
 };
 
-export const getUser = (id: number) => async (dispatch: AppDispatch) => {
+export const getUserAsync = (id: number) => async (dispatch: AppDispatch) => {
   await api.users.details(id).then((el: any) => dispatch(setProfile(el.result)));
 };
 
