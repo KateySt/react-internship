@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { getListUsersAsync, selectUsers } from 'Store/features/user/UsersSlice';
-import { Grid, Pagination, Stack } from '@mui/material';
+import { Pagination, Stack } from '@mui/material';
 import UserCard from 'Components/cart/UserCard';
 import { Link } from 'react-router-dom';
 
@@ -25,13 +25,12 @@ const UsersPage = () => {
     <>
       {(users.pagination && users.users) &&
         <>
-          <Grid container spacing={2}>
-            {users.users.map(user => (
-              <Link to={`/users/profile/${user.user_id}`}>
-                <UserCard key={user.user_id} user={user} />
-              </Link>
-            ))}
-          </Grid>
+
+          {users.users.map(user => (
+            <Link to={`/users/profile/${user.user_id}`}>
+              <UserCard key={user.user_id} user={user} />
+            </Link>
+          ))}
           <Stack spacing={2}>
             <Pagination count={users.pagination.total_page} color="secondary" onChange={handleChange} />
           </Stack>
