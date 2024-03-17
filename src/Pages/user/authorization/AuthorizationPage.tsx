@@ -16,6 +16,7 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
 import { useAuth0 } from '@auth0/auth0-react';
+import PasswordInput from 'Components/passwordInput/PasswordInput';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().lowercase().email('Invalid email format').matches(regExpEmail).required('Email is required'),
@@ -46,7 +47,7 @@ const AuthorizationPage: React.FC = () => {
     dispatch(setIsLogin(true));
   }, [token]);
 
-  const handleLogin = async (values: { email: string, password: string}) => {
+  const handleLogin = async (values: { email: string, password: string }) => {
     await dispatch(setTokenAsync(values.email, values.password));
   };
 
@@ -68,7 +69,7 @@ const AuthorizationPage: React.FC = () => {
       mt={10}
     >
       <Formik
-        initialValues={{ email: 'use1r@example.com', password: 'string' }}
+        initialValues={{ email: 'use1r@example.com', password: '1234567890' }}
         onSubmit={handleLogin}
         validationSchema={validationSchema}
       >
@@ -87,20 +88,11 @@ const AuthorizationPage: React.FC = () => {
               error={touched.email && !!errors.email}
             />
             <ErrorMessage name="email" component="p" />
-            <Field
-              as={TextField}
-              id="outlined-password-input"
-              label="Password"
-              autoComplete="current-password"
-              type="password"
-              name="password"
+            <PasswordInput
+              name={"password"}
               value={values.password}
               onChange={handleChange}
-              margin="normal"
-              fullWidth
-              error={touched.password && !!errors.password}
-            />
-            <ErrorMessage name="password" component="p" />
+              error={touched.password && !!errors.password} />
             <Button color="secondary" variant="contained" type="submit" fullWidth>
               Login
             </Button>

@@ -1,6 +1,7 @@
 import { FieldArray, FieldArrayRenderProps } from 'formik';
-import { Button, Chip, Stack, TextField } from '@mui/material';
+import { Chip, Stack, TextField } from '@mui/material';
 import React from 'react';
+import StyleButton from '../button/StyleButton';
 
 const EditLinks: React.FC<{ newLink: string, setNewLink: (s: string) => void, values: string[] }> = ({
                                                                                                        newLink,
@@ -38,13 +39,11 @@ const EditLinks: React.FC<{ newLink: string, setNewLink: (s: string) => void, va
               />
             ))}
           </Stack>
-          <Button
-            type="button"
+          <StyleButton
+            text={'Add'}
             onClick={() => handlerAddLinks(arrayHelpers)}
             disabled={!newLink.trim()}
-          >
-            Add
-          </Button>
+          />
         </>
       )}
     </FieldArray>

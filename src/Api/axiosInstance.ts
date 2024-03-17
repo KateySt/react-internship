@@ -80,6 +80,7 @@ const users = {
     request.put<Response<{ user_id: number }>>(`/user/${id}/update_info`, data),
   updatePassword: (data: { user_password: string, user_password_repeat: string }, id: number) =>
     request.put<Response<{ user_id: number }>>(`/user/${id}/update_password`, data),
+  deleteProfile: (id: number) => request.delete<Response<string>>(`/user/${id}`),
 };
 
 const api = {

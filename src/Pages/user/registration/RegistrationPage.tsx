@@ -7,6 +7,7 @@ import { ErrorMessage, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
 import { NewUser } from 'Types/NewUser';
+import PasswordInput from 'Components/passwordInput/PasswordInput';
 
 const validationSchema = Yup.object().shape({
   user_password: Yup.string().min(8).required('Password is required'),
@@ -97,34 +98,16 @@ const RegistrationPage = () => {
               error={touched.user_email && !!errors.user_email}
             />
             <ErrorMessage name="user_email" component="p" />
-            <TextField
-              id="outlined-password-input"
-              label="Password"
-              autoComplete="new-password"
-              type="password"
-              name="user_password"
+            <PasswordInput
+              name={'user_password'}
               value={values.user_password}
               onChange={handleChange}
-              onBlur={handleBlur}
-              margin="normal"
-              fullWidth
-              error={touched.user_password && !!errors.user_password}
-            />
-            <ErrorMessage name="user_password" component="p" />
-            <TextField
-              id="outlined-password-input"
-              label="Password-repeat"
-              autoComplete="new-password"
-              type="password"
-              name="user_password_repeat"
+              error={touched.user_password && !!errors.user_password} />
+            <PasswordInput
+              name={'user_password_repeat'}
               value={values.user_password_repeat}
               onChange={handleChange}
-              onBlur={handleBlur}
-              margin="normal"
-              fullWidth
-              error={touched.user_password_repeat && !!errors.user_password_repeat}
-            />
-            <ErrorMessage name="user_password_repeat" component="p" />
+              error={touched.user_password_repeat && !!errors.user_password_repeat} />
             <Button color="secondary" variant="contained" type="submit" fullWidth>
               Registration
             </Button>

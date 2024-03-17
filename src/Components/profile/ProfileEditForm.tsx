@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ErrorMessage, Form, Formik } from 'formik';
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import { setNewAvatarAsync } from 'Store/features/user/UsersSlice';
 import { useAppDispatch } from 'Store/hooks';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
@@ -9,22 +9,33 @@ import PhotoUpload from '../updatePhoto/PhotoUpload';
 import EditLinks from '../edit/EditLinks';
 import CityAutocomplete from '../city/CityAutocomplete';
 import PhoneInput from '../phoneInput/PhoneInput';
+import StyleButton from '../button/StyleButton';
+import PasswordInput from '../passwordInput/PasswordInput';
 
 interface ProfileEditFormProps {
   profile: Profile;
-  initialValues: UpdateUserInfo;
+  initialValuesUpdateInfo: UpdateUserInfo;
   onSubmit: (values: UpdateUserInfo) => void;
   validationSchema: any;
   cities: string[];
   onEditClick: () => void;
+  initialValuesUpdatePassword: {
+    user_password: string,
+    user_password_repeat: string,
+  };
+  validationSchemaPassword: any;
+  onSubmitPassword: (values: any) => void;
 }
 
 const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
                                                            profile,
-                                                           initialValues,
+                                                           initialValuesUpdateInfo,
                                                            onSubmit,
+                                                           onSubmitPassword,
                                                            validationSchema,
                                                            onEditClick,
+                                                           initialValuesUpdatePassword,
+                                                           validationSchemaPassword,
                                                          }) => {
   const [newLink, setNewLink] = useState('');
   const [photoData, setPhotoData] = useState<File | null>(null);
@@ -41,10 +52,31 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
 
   return (
     <>
-      <Button onClick={onEditClick}>Exit edit mode</Button>
+      <StyleButton onClick={onEditClick} text={'Exit edit mode'} />
       <PhotoUpload setPhotoData={setPhotoData} />
       <Formik
-        initialValues={initialValues}
+        initialValues={initialValuesUpdatePassword}
+        onSubmit={onSubmitPassword}
+        validationSchema={validationSchemaPassword}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          <Form>
+            <PasswordInput
+              name={'user_password'}
+              value={values.user_password}
+              onChange={handleChange}
+              error={touched.user_password && !!errors.user_password} />
+            <PasswordInput
+              name={'user_password_repeat'}
+              value={values.user_password_repeat}
+              onChange={handleChange}
+              error={touched.user_password_repeat && !!errors.user_password_repeat} />
+            <StyleButton text={'Update password'} type={'submit'} />
+          </Form>
+        )}
+      </Formik>
+      <Formik
+        initialValues={initialValuesUpdateInfo}
         onSubmit={onSubmit}
         validationSchema={validationSchema}
       >
@@ -100,9 +132,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
               error={!!errors.user_city}
             />
             <EditLinks newLink={newLink} setNewLink={setNewLink} values={values.user_links} />
-            <Button color="secondary" variant="contained" type="submit" fullWidth>
-              Update
-            </Button>
+            <StyleButton text={'Update'} type={'submit'} />
           </Form>
         )}
       </Formik>

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Avatar, Button, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Avatar, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { Profile } from 'Types/Profile';
 import 'react-phone-input-2/lib/material.css';
+import StyleButton from '../button/StyleButton';
 
 interface ProfileInfoProps {
   profile: Profile;
@@ -44,7 +45,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({ profile, isEditable, onEditCl
           ))}
         </List>
       </Typography>
-      {isEditable && <Button onClick={onEditClick}>Edit</Button>}
+      {isEditable && <StyleButton text={"Edit"} onClick={onEditClick}/>}
     </>
   );
 };

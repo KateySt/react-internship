@@ -65,6 +65,14 @@ export const setNewAvatarAsync = (avatar: File | null, id: number) => async (dis
   await api.users.updateAvatar(formData, id).then((el) => dispatch(setNewAvatar(el.result)));
 };
 
+export const deleteProfileAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.users.deleteProfile(id).then(() => {
+    dispatch(setUser({} as Profile));
+    dispatch(setToken(null));
+    dispatch(setIsLogin(false));
+  });
+};
+
 export const setInfoAsync = (data: UpdateUserInfo, id: number) => async (dispatch: AppDispatch) => {
   await api.users.updateInfo(data, id).then(() => dispatch(setInfo(data)));
 };
@@ -72,7 +80,7 @@ export const setInfoAsync = (data: UpdateUserInfo, id: number) => async (dispatc
 export const setPasswordAsync = (data: {
   user_password: string,
   user_password_repeat: string
-}, id: number) => async (dispatch: AppDispatch) => {
+}, id: number) => async () => {
   await api.users.updatePassword(data, id);
 };
 
