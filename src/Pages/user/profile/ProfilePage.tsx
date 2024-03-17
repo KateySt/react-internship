@@ -14,13 +14,12 @@ import ProfileInfo from 'Components/profile/ProfileInfo';
 
 const validationSchema = Yup.object().shape({
   user_links: Yup.array().optional(),
-  user_phone: Yup.string().max(9).optional(),
+  user_phone: Yup.string().max(12).optional(),
   user_status: Yup.string().max(100).optional(),
   user_city: Yup.string().optional(),
   user_firstname: Yup.string().min(4).max(64).required('First name is required'),
   user_lastname: Yup.string().min(4).max(64).required('Last name is required'),
 });
-
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -36,12 +35,12 @@ const ProfilePage = () => {
 
   useEffect(() => {
     dispatch(getUserAsync(Number(id)));
-  }, [dispatch, id]);
+  }, [id]);
 
   return (
     <>
       {profile.user_firstname && (
-        <Grid container spacing={3} justifyContent="center" margin={10}>
+        <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
             {!isEdit &&

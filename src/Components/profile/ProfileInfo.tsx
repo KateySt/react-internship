@@ -1,6 +1,7 @@
 import React from 'react';
 import { Avatar, Button, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { Profile } from 'Types/Profile';
+import 'react-phone-input-2/lib/material.css';
 
 interface ProfileInfoProps {
   profile: Profile;
@@ -9,6 +10,7 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({ profile, isEditable, onEditClick }) => {
+
   return (
     <>
       {!!profile.user_avatar ? (

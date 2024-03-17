@@ -3,8 +3,6 @@ import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { createUserAsync, getMe, selectIsLogin, setIsLogin, setTokenAsync } from 'Store/features/user/UsersSlice';
-import { User } from 'Types/User';
-import { creatUserAsync, getMe, selectIsLogin, setIsLogin, setTokenAsync } from 'Store/features/user/UsersSlice';
 import { ErrorMessage, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
