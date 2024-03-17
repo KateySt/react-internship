@@ -93,7 +93,7 @@ export const setTokenAsync = (email: string, password: string) => async (dispatc
     .then((el) => dispatch(setToken(el.result.access_token)));
 };
 
-export const creatUserAsync = (user: NewUser) => async (dispatch: AppDispatch) => {
+export const createUserAsync = (user: NewUser) => async (dispatch: AppDispatch) => {
     await api.users.create(user)
       .then((el) => dispatch(setUser({
           ...el.result,
@@ -105,4 +105,3 @@ export const creatUserAsync = (user: NewUser) => async (dispatch: AppDispatch) =
   }
 ;
 export default UsersSlice.reducer;
-;
