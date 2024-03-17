@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { getListUsersAsync, selectUsers } from 'Store/features/user/UsersSlice';
-import { Grid, Pagination, Stack } from '@mui/material';
+import PaginationComponent from 'Components/pagination/PaginationComponent';
 import UserCard from 'Components/cart/UserCard';
-import { Link } from 'react-router-dom';
 
 const UsersPage = () => {
   const dispatch = useAppDispatch();
@@ -22,21 +21,13 @@ const UsersPage = () => {
   }, [param]);
 
   return (
-    <>
-      {(users.pagination && users.users) &&
-        <Grid margin={3}>
-          {users.users.map(user => (
-            <Link to={`/users/profile/${user.user_id}`}>
-              <UserCard key={user.user_id} user={user} />
-            </Link>
-          ))}
-          <Stack spacing={2}>
-            <Pagination count={users.pagination.total_page} color="secondary" onChange={handleChange} />
-          </Stack>
-        </Grid>
-      }
-    </>
+    <PaginationComponent
+      data={users.users}
+      pagination={users.pagination}
+      nextPage={handleChange}
+      url={'/users/profile/'}
+      RenderComponent={UserCard}
+      idKey={'user_id'} />
   );
 };
-
 export default UsersPage;
