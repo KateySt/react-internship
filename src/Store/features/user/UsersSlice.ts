@@ -45,7 +45,7 @@ export const setTokenAsync = (email: string, password: string) => async (dispatc
     .then((el: any) => dispatch(setToken(el.result.access_token)));
 };
 
-export const creatUserAsync = (user: User) => async (dispatch: AppDispatch) => {
+export const createUserAsync = (user: User) => async (dispatch: AppDispatch) => {
   await api.users.create(user)
     .then((el: User) => dispatch(setUser(el)));
 };

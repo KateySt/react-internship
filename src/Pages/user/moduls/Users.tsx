@@ -13,7 +13,7 @@ export default function Users() {
     <Routes>
       {isLogin ?
         <>
-          <Route path="/list" element={<UsersPage />} />
+          <Route path="list" element={<UsersPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </>
         : <></>
