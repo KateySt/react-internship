@@ -25,7 +25,7 @@ const UsersPage = () => {
       data={users.users}
       pagination={users.pagination}
       nextPage={handleChange}
-      url={'/users/profile/'}
+      url={'/users/profile'}
       RenderComponent={UserCard}
       idKey={'user_id'} />
   );

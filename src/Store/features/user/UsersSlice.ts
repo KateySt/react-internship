@@ -4,11 +4,10 @@ import api from 'Api/axiosInstance';
 import { UserList } from 'Types/UserList';
 import { Profile } from 'Types/Profile';
 import { NewUser } from 'Types/NewUser';
-import { User } from 'Types/User';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
 
 export interface UserState {
-  user: User | Profile,
+  user: Profile,
   accessToken: string | null;
   users: UserList,
   isLogin: boolean;
@@ -16,7 +15,7 @@ export interface UserState {
 }
 
 const initialState: UserState = {
-  user: {} as User | Profile,
+  user: {} as Profile,
   accessToken: null,
   users: {} as UserList,
   isLogin: false,
@@ -27,7 +26,7 @@ export const UsersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User | Profile>) => {
+    setUser: (state, action: PayloadAction<Profile>) => {
       state.user = action.payload;
     },
     setProfile: (state, action: PayloadAction<Profile>) => {
@@ -108,6 +107,12 @@ export const createUserAsync = (user: NewUser) => async (dispatch: AppDispatch) 
           user_email: user.user_email,
           user_firstname: user.user_firstname,
           user_lastname: user.user_lastname,
+          user_avatar: '',
+          user_city: '',
+          user_phone: '',
+          user_links: [],
+          is_superuser: false,
+          user_status: '',
         })),
       );
   }

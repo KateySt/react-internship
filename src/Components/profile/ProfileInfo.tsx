@@ -11,7 +11,6 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({ profile, isEditable, onEditClick }) => {
-
   return (
     <>
       {!!profile.user_avatar ? (

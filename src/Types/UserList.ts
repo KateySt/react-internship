@@ -1,7 +1,7 @@
 import { User } from './User';
 
 export interface UserList {
-  users: (User & { user_avatar: string })[],
+  users: User[],
   pagination: {
     current_page: number,
     total_page: number,
