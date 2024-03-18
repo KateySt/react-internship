@@ -66,7 +66,9 @@ const companies = {
 };
 
 const users = {
+  getMe: () => request.get<User>('/auth/me/'),
   list: () => request.get<User[]>('/users'),
+  login: (body: {}) => request.post('/auth/login/', body),
   details: (id: string) => request.get<User>(`/user/${id}`),
   create: (data: User) => request.post<User>('/user', data),
 };

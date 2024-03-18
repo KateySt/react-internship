@@ -12,7 +12,6 @@ const AboutPage = () => {
       .then((el) => console.log(el))
       .catch((err) => console.log('Don`t correct input', err));
   };
-
   return <div onClick={handelValueChange}>{theme}</div>;
 };
 

@@ -1,11 +1,10 @@
 import React from 'react';
 
 const ProfilePage = () => {
-    return (
-        <div>
-user profile
-        </div>
-    );
+  return (
+    <div>
+      profile
+    </div>
+  );
 };
-
 export default ProfilePage;
