@@ -12,7 +12,6 @@ import {
 import { Grid } from '@mui/material';
 import { IoIosArrowBack } from 'react-icons/io';
 import * as Yup from 'yup';
-import { Profile } from 'Types/Profile';
 import 'react-phone-input-2/lib/style.css';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
 import { cities } from 'Utils/cities';
@@ -40,7 +39,7 @@ const ProfilePage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectProfile);
-  const user = useAppSelector(selectUser) as Profile;
+  const user = useAppSelector(selectUser);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const handleUpdateInfo = async (values: UpdateUserInfo) => {
