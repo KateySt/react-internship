@@ -7,7 +7,7 @@ export default function Companies() {
     return (
         <Routes>
             <Route path="/" element={<CompaniesPage/>}/>
-            <Route path="profile" element={<ProfilePage/>}/>
+            <Route path="profile/:id" element={<ProfilePage/>}/>
         </Routes>
     );
 }

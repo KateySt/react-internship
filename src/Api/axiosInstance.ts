@@ -5,6 +5,8 @@ import { UserList } from 'Types/UserList';
 import { NewUser } from 'Types/NewUser';
 import { Response } from 'Types/Response';
 import { UpdateUserInfo } from '../Types/UpdateUserInfo';
+import { CompanyList } from '../Types/CompanyList';
+import { CompanyProfile } from '../Types/CompanyProfile';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -66,7 +68,8 @@ const test = {
 };
 
 const companies = {
-  list: () => request.get('/companies'),
+  list: (queryParams?: {}) => request.get<Response<CompanyList>>('/companies', { params: queryParams }),
+  details: (id: number) => request.get<Response<CompanyProfile>>(`/company/${id}`),
 };
 
 const users = {

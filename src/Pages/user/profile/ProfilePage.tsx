@@ -40,7 +40,7 @@ const ProfilePage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectProfile);
-  const user = useAppSelector(selectUser) as Profile;
+  const user = useAppSelector(selectUser);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const handleUpdateInfo = async (values: UpdateUserInfo) => {
