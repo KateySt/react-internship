@@ -8,17 +8,14 @@ import {
   setNewAvatarAsync,
   updateInfoCompanyAsync,
 } from 'Store/features/company/CompaniesSlice';
-import { Avatar, Grid, TextField, Typography } from '@mui/material';
+import { Avatar, Grid, Typography } from '@mui/material';
 import { IoIosArrowBack } from 'react-icons/io';
 import StyleButton from 'Components/button/StyleButton';
 import { selectUser } from 'Store/features/user/UsersSlice';
-import { ErrorMessage, Form, Formik } from 'formik';
-import PhoneInput from 'Components/phoneInput/PhoneInput';
-import CityAutocomplete from 'Components/city/CityAutocomplete';
-import EditLinks from 'Components/edit/EditLinks';
 import PhotoUpload from 'Components/updatePhoto/PhotoUpload';
 import { UpdateCompany } from 'Types/UpdateCompany';
 import { MdDeleteForever } from 'react-icons/md';
+import CompanyEditForm from '../../../Components/company/CompanyEditForm';
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -27,7 +24,6 @@ const ProfilePage = () => {
   const company = useAppSelector(selectCompany);
   const user = useAppSelector(selectUser);
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [newLink, setNewLink] = useState('');
   const [photoData, setPhotoData] = useState<File | null>(null);
   const handleUpdateInfo = async (values: UpdateCompany) => {
     await dispatch(updateInfoCompanyAsync(values, company.company_id));
@@ -48,8 +44,10 @@ const ProfilePage = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    await dispatch(deleteCompanyAsync(company.company_id));
-    navigate('/companies');
+    if (window.confirm('Are you sure you want to delete this company?')) {
+      await dispatch(deleteCompanyAsync(company.company_id));
+      navigate('/companies');
+    }
   };
 
   let initialCompany = {
@@ -96,68 +94,7 @@ const ProfilePage = () => {
             {isEdit &&
               <>
                 <PhotoUpload setPhotoData={setPhotoData} />
-                <Formik
-                  initialValues={initialCompany}
-                  onSubmit={handleUpdateInfo}
-                >
-                  {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                    <Form>
-                      <TextField
-                        id="outlined-required"
-                        label="Name"
-                        variant="outlined"
-                        name="company_name"
-                        value={values.company_name}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        margin="normal"
-                        fullWidth
-                        error={touched.company_name && !!errors.company_name}
-                      />
-                      <ErrorMessage name="company_name" component="p" />
-                      <TextField
-                        id="outlined-required"
-                        label="Title"
-                        variant="outlined"
-                        name="company_title"
-                        value={values.company_title}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        margin="normal"
-                        fullWidth
-                        error={touched.company_title && !!errors.company_title}
-                      />
-                      <ErrorMessage name="company_title" component="p" />
-                      <PhoneInput
-                        name={'company_phone'}
-                        value={values.company_phone}
-                        error={errors.company_phone} />
-                      <TextField
-                        id="outlined"
-                        label="Description"
-                        variant="outlined"
-                        name="company_description"
-                        value={values.company_description}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        margin="normal"
-                        fullWidth
-                        error={!!errors.company_description}
-                      />
-                      <ErrorMessage name="company_description" component="p" />
-                      <CityAutocomplete
-                        id="company_city"
-                        value={values.company_city}
-                        onChange={(newValue) => handleChange({ target: { name: 'company_city', value: newValue } })}
-                        onBlur={handleBlur}
-                        error={!!errors.company_city}
-                      />
-                      <EditLinks lable={'company_links'} newLink={newLink} setNewLink={setNewLink}
-                                 values={values.company_links} />
-                      <StyleButton text={'Update'} type={'submit'} />
-                    </Form>
-                  )}
-                </Formik>
+                <CompanyEditForm initialCompany={initialCompany} handleUpdateInfo={handleUpdateInfo} />
               </>
             }
           </>
