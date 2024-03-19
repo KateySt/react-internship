@@ -109,6 +109,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
             />
             <ErrorMessage name="user_lastname" component="p" />
             <PhoneInput
+              name={'user_phone'}
               value={values.user_phone}
               error={errors.user_phone} />
             <TextField
@@ -131,7 +132,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
               onBlur={handleBlur}
               error={!!errors.user_city}
             />
-            <EditLinks newLink={newLink} setNewLink={setNewLink} values={values.user_links} />
+            <EditLinks lable={"user_links"} newLink={newLink} setNewLink={setNewLink} values={values.user_links} />
             <StyleButton text={'Update'} type={'submit'} />
           </Form>
         )}

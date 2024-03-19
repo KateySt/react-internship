@@ -42,7 +42,7 @@ export const UsersSlice = createSlice({
       state.isLogin = action.payload;
     },
     setNewAvatar: (state, action: PayloadAction<string>) => {
-      (state.user as Profile).user_avatar = action.payload;
+      state.user.user_avatar = action.payload;
     },
     setInfo: (state, action: PayloadAction<UpdateUserInfo>) => {
       state.user = { ...state.user, ...action.payload };

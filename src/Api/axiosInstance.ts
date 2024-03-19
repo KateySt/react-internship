@@ -7,6 +7,7 @@ import { Response } from 'Types/Response';
 import { UpdateUserInfo } from '../Types/UpdateUserInfo';
 import { CompanyList } from '../Types/CompanyList';
 import { CompanyProfile } from '../Types/CompanyProfile';
+import { UpdateCompany } from '../Types/UpdateCompany';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -68,8 +69,15 @@ const test = {
 };
 
 const companies = {
+  deleteCompany: (id: number) => request.delete<Response<string>>(`/company/${id}`),
   list: (queryParams?: {}) => request.get<Response<CompanyList>>('/companies', { params: queryParams }),
   details: (id: number) => request.get<Response<CompanyProfile>>(`/company/${id}`),
+  create: (data: { company_name: string, is_visible: boolean }) => request.post<Response<{
+    company_id: number
+  }>>('/company', data),
+  updateInfo: (data: UpdateCompany, id: number) =>
+    request.put<Response<{ company_id: number }>>(`/company/${id}/update_info`, data),
+  updateAvatar: (data: FormData, id: number) => request.put<Response<string>>(`/company/${id}/update_avatar`, data),
 };
 
 const users = {
