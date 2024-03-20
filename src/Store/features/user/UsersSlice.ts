@@ -17,7 +17,14 @@ export interface UserState {
 const initialState: UserState = {
   user: {} as User,
   accessToken: null,
-  users: {} as UserList,
+  users: {
+    users: [],
+    pagination: {
+      current_page: 1,
+      total_page: 1,
+      total_results: 0,
+    },
+  },
   isLogin: false,
   currentUser: {} as User,
 };

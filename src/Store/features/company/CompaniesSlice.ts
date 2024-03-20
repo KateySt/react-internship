@@ -12,7 +12,14 @@ export interface CompanyState {
 }
 
 const initialState: CompanyState = {
-  companies: {} as CompanyList,
+  companies: {
+    companies: [],
+    pagination: {
+      current_page: 1,
+      total_page: 1,
+      total_results: 0,
+    },
+  },
   company: {} as CompanyProfile,
 };
 

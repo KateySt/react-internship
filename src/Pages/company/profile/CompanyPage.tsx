@@ -15,9 +15,9 @@ import { selectUser } from 'Store/features/user/UsersSlice';
 import PhotoUpload from 'Components/updatePhoto/PhotoUpload';
 import { UpdateCompany } from 'Types/UpdateCompany';
 import { MdDeleteForever } from 'react-icons/md';
-import CompanyEditForm from '../../../Components/company/CompanyEditForm';
+import CompanyEditForm from 'Components/company/CompanyEditForm';
 
-const ProfilePage = () => {
+const CompanyPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -104,4 +104,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default CompanyPage;

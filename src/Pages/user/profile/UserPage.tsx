@@ -35,7 +35,7 @@ const validationSchemaPassword = Yup.object().shape({
     .required('Password confirmation is required'),
 });
 
-const ProfilePage = () => {
+const UserPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectCurrentUser);
@@ -68,12 +68,7 @@ const ProfilePage = () => {
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           {user.user_id === profile.user_id && <MdDeleteForever onClick={handleDelete} size={36} />}
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
-            {!isEdit &&
-              <ProfileInfo user={profile}
-                           isEditable={user.user_id === profile.user_id}
-                           onEditClick={() => setIsEdit(true)} />
-            }
-            {isEdit && (
+            {isEdit ?
               <ProfileEditForm
                 initialValuesUpdateInfo={{
                   user_firstname: user.user_firstname,
@@ -95,11 +90,15 @@ const ProfilePage = () => {
                 cities={cities}
                 onEditClick={() => setIsEdit(false)}
               />
-            )}
+              :
+              <ProfileInfo user={profile}
+                           isEditable={user.user_id === profile.user_id}
+                           onEditClick={() => setIsEdit(true)} />
+            }
           </Grid>
         </Grid>
       )}
     </>
   );
 };
-export default ProfilePage;
+export default UserPage;
