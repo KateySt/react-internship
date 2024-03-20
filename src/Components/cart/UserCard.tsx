@@ -1,9 +1,9 @@
 import React from 'react';
 import { Avatar, Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import './UserCard.css';
-import { User } from 'Types/User';
+import { UserInfo } from 'Types/UserInfo';
 
-const UserCard: React.FC<{ data: User }> = ({ data }) => {
+const UserCard: React.FC<{ data: UserInfo }> = ({ data }) => {
   return (
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card className="card">

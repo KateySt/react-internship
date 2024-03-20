@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import {
   deleteProfileAsync,
   getUserAsync,
-  selectProfile,
+  selectCurrentUser,
   selectUser,
   setInfoAsync,
   setPasswordAsync,
@@ -38,7 +38,7 @@ const validationSchemaPassword = Yup.object().shape({
 const ProfilePage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
-  const profile = useAppSelector(selectProfile);
+  const profile = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectUser);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState<boolean>(false);

@@ -21,7 +21,11 @@ const AppRoutes: React.FC = () => {
   useEffect(() => {
     let tokenData = localStorage.getItem('token');
     if (!tokenData) return;
-    dispatch(setToken(tokenData));
+    try {
+      dispatch(setToken(tokenData));
+    } catch (error) {
+      console.error('Error:', error);
+    }
     dispatch(getMe());
     dispatch(setIsLogin(true));
   }, []);

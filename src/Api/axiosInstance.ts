@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ErrorResponse } from 'Types/ErrorResponse';
-import { Profile } from 'Types/Profile';
+import { User } from 'Types/User';
 import { UserList } from 'Types/UserList';
 import { NewUser } from 'Types/NewUser';
 import { Response } from 'Types/Response';
@@ -70,10 +70,10 @@ const companies = {
 };
 
 const users = {
-  getMe: () => request.get<Response<Profile>>('/auth/me'),
+  getMe: () => request.get<Response<User>>('/auth/me'),
   list: (queryParams?: {}) => request.get<Response<UserList>>('/users', { params: queryParams }),
   login: (body: {}) => request.post<Response<{ access_token: string, token_type: string }>>('/auth/login', body),
-  details: (id: number) => request.get<Response<Profile>>(`/user/${id}`),
+  details: (id: number) => request.get<Response<User>>(`/user/${id}`),
   create: (data: NewUser) => request.post<Response<{ user_id: number }>>('/user', data),
   updateAvatar: (data: FormData, id: number) => request.put<Response<string>>(`/user/${id}/update_avatar`, data),
   updateInfo: (data: UpdateUserInfo, id: number) =>

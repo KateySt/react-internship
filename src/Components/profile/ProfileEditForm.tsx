@@ -4,7 +4,7 @@ import { TextField } from '@mui/material';
 import { setNewAvatarAsync } from 'Store/features/user/UsersSlice';
 import { useAppDispatch } from 'Store/hooks';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
-import { Profile } from 'Types/Profile';
+import { User } from 'Types/User';
 import PhotoUpload from '../updatePhoto/PhotoUpload';
 import EditLinks from '../edit/EditLinks';
 import CityAutocomplete from '../city/CityAutocomplete';
@@ -13,7 +13,7 @@ import StyleButton from '../button/StyleButton';
 import PasswordInput from '../passwordInput/PasswordInput';
 
 interface ProfileEditFormProps {
-  profile: Profile;
+  profile: User;
   initialValuesUpdateInfo: UpdateUserInfo;
   onSubmit: (values: UpdateUserInfo) => void;
   validationSchema: any;

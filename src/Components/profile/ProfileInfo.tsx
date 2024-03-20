@@ -1,11 +1,11 @@
 import React from 'react';
 import { Avatar, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { Profile } from 'Types/Profile';
+import { User } from 'Types/User';
 import 'react-phone-input-2/lib/material.css';
 import StyleButton from '../button/StyleButton';
 
 interface ProfileInfoProps {
-  profile: Profile;
+  profile: User;
   isEditable: boolean;
   onEditClick: () => void;
 }
