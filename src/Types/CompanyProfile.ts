@@ -1,3 +1,5 @@
+import { UserInfo } from './UserInfo';
+
 export interface CompanyProfile {
   company_id: number;
   company_name: string;
@@ -8,11 +10,5 @@ export interface CompanyProfile {
   company_city: string;
   company_phone: string;
   company_links: string[];
-  company_owner: {
-    user_id: number;
-    user_email: string;
-    user_firstname: string;
-    user_lastname: string;
-    user_avatar: string;
-  };
+  company_owner: UserInfo;
 }

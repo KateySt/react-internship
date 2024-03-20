@@ -1,11 +1,8 @@
 import { Company } from './Company';
+import { Pagination } from './Pagination';
 
 
 export interface CompanyList {
   companies: Company[],
-  pagination: {
-    current_page: number,
-    total_page: number,
-    total_results: number
-  }
+  pagination: Pagination;
 }
