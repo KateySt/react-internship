@@ -1,7 +1,7 @@
-import { User } from './User';
+import { UserInfo } from './UserInfo';
 
 export interface UserList {
-  users: User[],
+  users: UserInfo[],
   pagination: {
     current_page: number,
     total_page: number,

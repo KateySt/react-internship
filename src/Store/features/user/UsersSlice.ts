@@ -2,35 +2,35 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch, RootState } from '../../store';
 import api from 'Api/axiosInstance';
 import { UserList } from 'Types/UserList';
-import { Profile } from 'Types/Profile';
+import { User } from 'Types/User';
 import { NewUser } from 'Types/NewUser';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
 
 export interface UserState {
-  user: Profile,
+  user: User,
   accessToken: string | null;
   users: UserList,
   isLogin: boolean;
-  profile: Profile;
+  currentUser: User;
 }
 
 const initialState: UserState = {
-  user: {} as Profile,
+  user: {} as User,
   accessToken: null,
   users: {} as UserList,
   isLogin: false,
-  profile: {} as Profile,
+  currentUser: {} as User,
 };
 
 export const UsersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<Profile>) => {
+    setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
     },
-    setProfile: (state, action: PayloadAction<Profile>) => {
-      state.profile = action.payload;
+    setProfile: (state, action: PayloadAction<User>) => {
+      state.currentUser = action.payload;
     },
     setToken: (state, action: PayloadAction<string | null>) => {
       state.accessToken = action.payload;
@@ -53,7 +53,7 @@ export const UsersSlice = createSlice({
 export const { setUser, setInfo, setNewAvatar, setProfile, setIsLogin, setToken, setUsers } = UsersSlice.actions;
 
 export const selectUser = (state: RootState) => state.users.user;
-export const selectProfile = (state: RootState) => state.users.profile;
+export const selectCurrentUser = (state: RootState) => state.users.currentUser;
 export const selectUsers = (state: RootState) => state.users.users;
 export const selectIsLogin = (state: RootState) => state.users.isLogin;
 export const selectToken = (state: RootState) => state.users.accessToken;
@@ -66,7 +66,7 @@ export const setNewAvatarAsync = (avatar: File | null, id: number) => async (dis
 
 export const deleteProfileAsync = (id: number) => async (dispatch: AppDispatch) => {
   await api.users.deleteProfile(id).then(() => {
-    dispatch(setUser({} as Profile));
+    dispatch(setUser({} as User));
     dispatch(setToken(null));
     dispatch(setIsLogin(false));
   });
@@ -101,20 +101,23 @@ export const setTokenAsync = (email: string, password: string) => async (dispatc
 };
 
 export const createUserAsync = (user: NewUser) => async (dispatch: AppDispatch) => {
-    await api.users.create(user)
-      .then((el) => dispatch(setUser({
-          ...el.result,
-          user_email: user.user_email,
-          user_firstname: user.user_firstname,
-          user_lastname: user.user_lastname,
-          user_avatar: '',
-          user_city: '',
-          user_phone: '',
-          user_links: [],
-          is_superuser: false,
-          user_status: '',
-        })),
-      );
+  try {
+    const response = await api.users.create(user);
+    const newUser = {
+      ...response.result,
+      user_email: user.user_email,
+      user_firstname: user.user_firstname,
+      user_lastname: user.user_lastname,
+      user_avatar: '',
+      user_city: '',
+      user_phone: '',
+      user_links: [],
+      is_superuser: false,
+      user_status: '',
+    };
+    dispatch(setUser(newUser));
+  } catch (error) {
+    console.error('Error creating user:', error);
   }
-;
+};
 export default UsersSlice.reducer;
