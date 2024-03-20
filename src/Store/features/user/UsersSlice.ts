@@ -100,24 +100,7 @@ export const setTokenAsync = (email: string, password: string) => async (dispatc
     .then((el) => dispatch(setToken(el.result.access_token)));
 };
 
-export const createUserAsync = (user: NewUser) => async (dispatch: AppDispatch) => {
-  try {
-    const response = await api.users.create(user);
-    const newUser = {
-      ...response.result,
-      user_email: user.user_email,
-      user_firstname: user.user_firstname,
-      user_lastname: user.user_lastname,
-      user_avatar: '',
-      user_city: '',
-      user_phone: '',
-      user_links: [],
-      is_superuser: false,
-      user_status: '',
-    };
-    dispatch(setUser(newUser));
-  } catch (error) {
-    console.error('Error creating user:', error);
-  }
+export const createUserAsync = (user: NewUser) => async () => {
+  await api.users.create(user);
 };
 export default UsersSlice.reducer;
