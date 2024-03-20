@@ -69,7 +69,7 @@ const ProfilePage = () => {
           {user.user_id === profile.user_id && <MdDeleteForever onClick={handleDelete} size={36} />}
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
             {!isEdit &&
-              <ProfileInfo profile={profile}
+              <ProfileInfo user={profile}
                            isEditable={user.user_id === profile.user_id}
                            onEditClick={() => setIsEdit(true)} />
             }
@@ -87,7 +87,7 @@ const ProfilePage = () => {
                   user_password: '',
                   user_password_repeat: '',
                 }}
-                profile={profile}
+                user={profile}
                 onSubmitPassword={handleUpdatePassword}
                 onSubmit={handleUpdateInfo}
                 validationSchema={validationSchema}

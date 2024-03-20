@@ -12,8 +12,8 @@ import PhoneInput from '../phoneInput/PhoneInput';
 import StyleButton from '../button/StyleButton';
 import PasswordInput from '../passwordInput/PasswordInput';
 
-interface ProfileEditFormProps {
-  profile: User;
+interface UserEditFormProps {
+  user: User;
   initialValuesUpdateInfo: UpdateUserInfo;
   onSubmit: (values: UpdateUserInfo) => void;
   validationSchema: any;
@@ -27,8 +27,8 @@ interface ProfileEditFormProps {
   onSubmitPassword: (values: any) => void;
 }
 
-const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
-                                                           profile,
+const ProfileEditForm: React.FC<UserEditFormProps> = ({
+                                                           user,
                                                            initialValuesUpdateInfo,
                                                            onSubmit,
                                                            onSubmitPassword,
@@ -41,7 +41,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
   const [photoData, setPhotoData] = useState<File | null>(null);
   const dispatch = useAppDispatch();
   const handleSubmit = async () => {
-    await dispatch(setNewAvatarAsync(photoData, profile.user_id));
+    await dispatch(setNewAvatarAsync(photoData, user.user_id));
   };
 
   useEffect(() => {
