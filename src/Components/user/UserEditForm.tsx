@@ -27,7 +27,7 @@ interface UserEditFormProps {
   onSubmitPassword: (values: any) => void;
 }
 
-const ProfileEditForm: React.FC<UserEditFormProps> = ({
+const UserEditForm: React.FC<UserEditFormProps> = ({
                                                            user,
                                                            initialValuesUpdateInfo,
                                                            onSubmit,
@@ -140,4 +140,4 @@ const ProfileEditForm: React.FC<UserEditFormProps> = ({
   );
 };
 
-export default ProfileEditForm;
+export default UserEditForm;
