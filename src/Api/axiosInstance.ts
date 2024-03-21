@@ -1,10 +1,14 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { User } from 'Types/User';
 import { ErrorResponse } from 'Types/ErrorResponse';
+import { User } from 'Types/User';
+import { UserList } from 'Types/UserList';
+import { NewUser } from 'Types/NewUser';
+import { Response } from 'Types/Response';
+import { UpdateUserInfo } from '../Types/UpdateUserInfo';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
-  timeout: 5000,
+  timeout: 10000,
   headers: { Accept: 'application/json' },
 });
 
@@ -66,11 +70,17 @@ const companies = {
 };
 
 const users = {
-  getMe: () => request.get<User>('/auth/me/'),
-  list: () => request.get<User[]>('/users'),
-  login: (body: {}) => request.post('/auth/login/', body),
-  details: (id: string) => request.get<User>(`/user/${id}`),
-  create: (data: User) => request.post<User>('/user', data),
+  getMe: () => request.get<Response<User>>('/auth/me'),
+  list: (queryParams?: {}) => request.get<Response<UserList>>('/users', { params: queryParams }),
+  login: (body: {}) => request.post<Response<{ access_token: string, token_type: string }>>('/auth/login', body),
+  details: (id: number) => request.get<Response<User>>(`/user/${id}`),
+  create: (data: NewUser) => request.post<Response<{ user_id: number }>>('/user', data),
+  updateAvatar: (data: FormData, id: number) => request.put<Response<string>>(`/user/${id}/update_avatar`, data),
+  updateInfo: (data: UpdateUserInfo, id: number) =>
+    request.put<Response<{ user_id: number }>>(`/user/${id}/update_info`, data),
+  updatePassword: (data: { user_password: string, user_password_repeat: string }, id: number) =>
+    request.put<Response<{ user_id: number }>>(`/user/${id}/update_password`, data),
+  delete: (id: number) => request.delete<Response<string>>(`/user/${id}`),
 };
 
 const api = {

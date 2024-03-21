@@ -1,0 +1,15 @@
+.card {
+    display: flex;
+    marginBottom: 20;
+    margin: 20px;
+}
+
+.media {
+    width: 150px;
+    height: 150px;
+    objectFit: cover;
+}
+
+.content {
+    flex: 1;
+}

@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import React, { useEffect } from 'react';
-import { selectToken, setIsLogin, setToken } from 'Store/features/user/UsersSlice';
+import { getMe, selectToken, setIsLogin, setToken } from 'Store/features/user/UsersSlice';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Header from 'Components/header';
 import HomePage from '../home';
@@ -21,7 +21,12 @@ const AppRoutes: React.FC = () => {
   useEffect(() => {
     let tokenData = localStorage.getItem('token');
     if (!tokenData) return;
-    dispatch(setToken(tokenData));
+    try {
+      dispatch(setToken(tokenData));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    dispatch(getMe());
     dispatch(setIsLogin(true));
   }, []);
 

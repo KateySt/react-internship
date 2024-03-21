@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import UsersPage from '../list';
-import ProfilePage from '../profile';
+import UserPage from '../user';
 import AuthorizationPage from '../authorization';
 import RegistrationPage from '../registration';
 import React from 'react';
@@ -14,7 +14,7 @@ export default function Users() {
       {isLogin ?
         <>
           <Route path="list" element={<UsersPage />} />
-          <Route path="profile" element={<ProfilePage />} />
+          <Route path='user/:id' element={<UserPage />}/>
         </>
         : <></>
       }

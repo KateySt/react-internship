@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { createUserAsync, getMe, selectIsLogin, setIsLogin, setTokenAsync } from 'Store/features/user/UsersSlice';
-import { User } from 'Types/User';
 import { ErrorMessage, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { regExpEmail } from 'Utils/regular';
+import { NewUser } from 'Types/NewUser';
+import PasswordInput from 'Components/passwordInput/PasswordInput';
 
 const validationSchema = Yup.object().shape({
   user_password: Yup.string().min(8).required('Password is required'),
@@ -23,7 +24,7 @@ const RegistrationPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const handleRegistration = async (values: User) => {
+  const handleRegistration = async (values: NewUser) => {
     try {
       await dispatch(createUserAsync(values));
     } catch (error) {
@@ -52,7 +53,7 @@ const RegistrationPage = () => {
       mt={10}
     >
       <Formik
-        initialValues={{} as User}
+        initialValues={{} as NewUser}
         onSubmit={handleRegistration}
         validationSchema={validationSchema}
       >
@@ -97,34 +98,16 @@ const RegistrationPage = () => {
               error={touched.user_email && !!errors.user_email}
             />
             <ErrorMessage name="user_email" component="p" />
-            <TextField
-              id="outlined-password-input"
-              label="Password"
-              autoComplete="new-password"
-              type="password"
-              name="user_password"
+            <PasswordInput
+              name={'user_password'}
               value={values.user_password}
               onChange={handleChange}
-              onBlur={handleBlur}
-              margin="normal"
-              fullWidth
-              error={touched.user_password && !!errors.user_password}
-            />
-            <ErrorMessage name="user_password" component="p" />
-            <TextField
-              id="outlined-password-input"
-              label="Password-repeat"
-              autoComplete="new-password"
-              type="password"
-              name="user_password_repeat"
+              error={touched.user_password && !!errors.user_password} />
+            <PasswordInput
+              name={'user_password_repeat'}
               value={values.user_password_repeat}
               onChange={handleChange}
-              onBlur={handleBlur}
-              margin="normal"
-              fullWidth
-              error={touched.user_password_repeat && !!errors.user_password_repeat}
-            />
-            <ErrorMessage name="user_password_repeat" component="p" />
+              error={touched.user_password_repeat && !!errors.user_password_repeat} />
             <Button color="secondary" variant="contained" type="submit" fullWidth>
               Registration
             </Button>
