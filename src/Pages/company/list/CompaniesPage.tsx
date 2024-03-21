@@ -48,7 +48,7 @@ const CompaniesPage = () => {
         data={companies.companies}
         pagination={companies.pagination}
         nextPage={handleChange}
-        url={'/companies/profile'}
+        url={'/companies/company'}
         RenderComponent={CompanyCard}
         idKey={'company_id'} />
       <Modal isOpen={isShow} onClose={handleCloseModal}>
