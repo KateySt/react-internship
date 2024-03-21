@@ -65,7 +65,7 @@ export const setNewAvatarAsync = (avatar: File | null, id: number) => async (dis
 };
 
 export const deleteProfileAsync = (id: number) => async (dispatch: AppDispatch) => {
-  await api.users.deleteProfile(id).then(() => {
+  await api.users.delete(id).then(() => {
     dispatch(setUser({} as User));
     dispatch(setToken(null));
     dispatch(setIsLogin(false));
