@@ -4,13 +4,13 @@ import { User } from 'Types/User';
 import 'react-phone-input-2/lib/material.css';
 import StyleButton from '../button/StyleButton';
 
-interface ProfileInfoProps {
+interface UserInfoProps {
   user: User;
   isEditable: boolean;
   onEditClick: () => void;
 }
 
-const ProfileInfo: React.FC<ProfileInfoProps> = ({ user, isEditable, onEditClick }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick }) => {
   return (
     <>
       {!!user.user_avatar ? (
@@ -49,4 +49,4 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({ user, isEditable, onEditClick
   );
 };
 
-export default ProfileInfo;
+export default UserInfo;

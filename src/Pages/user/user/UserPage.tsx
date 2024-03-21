@@ -15,8 +15,8 @@ import * as Yup from 'yup';
 import 'react-phone-input-2/lib/style.css';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
 import { cities } from 'Utils/cities';
-import ProfileEditForm from 'Components/profile/ProfileEditForm';
-import ProfileInfo from 'Components/profile/ProfileInfo';
+import UserEditForm from 'Components/user/UserEditForm';
+import UserInfo from 'Components/user/UserInfo';
 import { MdDeleteForever } from 'react-icons/md';
 
 const validationSchema = Yup.object().shape({
@@ -38,7 +38,7 @@ const validationSchemaPassword = Yup.object().shape({
 const UserPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
-  const profile = useAppSelector(selectCurrentUser);
+  const currentUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectUser);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -63,13 +63,13 @@ const UserPage = () => {
 
   return (
     <>
-      {profile.user_firstname && (
+      {currentUser.user_firstname && (
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
-          {user.user_id === profile.user_id && <MdDeleteForever onClick={handleDelete} size={36} />}
+          {user.user_id === currentUser.user_id && <MdDeleteForever onClick={handleDelete} size={36} />}
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
-            {isEdit ?
-              <ProfileEditForm
+            {isEdit &&
+              <UserEditForm
                 initialValuesUpdateInfo={{
                   user_firstname: user.user_firstname,
                   user_lastname: user.user_lastname,
@@ -82,7 +82,7 @@ const UserPage = () => {
                   user_password: '',
                   user_password_repeat: '',
                 }}
-                user={profile}
+                user={currentUser}
                 onSubmitPassword={handleUpdatePassword}
                 onSubmit={handleUpdateInfo}
                 validationSchema={validationSchema}
@@ -90,11 +90,11 @@ const UserPage = () => {
                 cities={cities}
                 onEditClick={() => setIsEdit(false)}
               />
-              :
-              <ProfileInfo user={profile}
-                           isEditable={user.user_id === profile.user_id}
-                           onEditClick={() => setIsEdit(true)} />
-            }
+            :
+              <UserInfo user={currentUser}
+            isEditable={user.user_id === currentUser.user_id}
+            onEditClick={() => setIsEdit(true)} />
+          }
           </Grid>
         </Grid>
       )}
