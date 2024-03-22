@@ -8,7 +8,7 @@ import { UpdateCompany } from 'Types/UpdateCompany';
 
 export interface CompanyState {
   companies: CompanyList;
-  company: CompanyProfile;
+  company: CompanyProfile | null;
 }
 
 const initialState: CompanyState = {
@@ -20,7 +20,7 @@ const initialState: CompanyState = {
       total_results: 0,
     },
   },
-  company: {} as CompanyProfile,
+  company: null,
 };
 
 export const CompaniesSlice = createSlice({
@@ -37,9 +37,11 @@ export const CompaniesSlice = createSlice({
       state.companies.companies.push(action.payload);
     },
     setInfo: (state, action: PayloadAction<UpdateCompany>) => {
+      if (!state.company) return;
       state.company = { ...state.company, ...action.payload };
     },
     setNewAvatar: (state, action: PayloadAction<string>) => {
+      if (!state.company) return;
       state.company.company_avatar = action.payload;
     },
     deleteCompany: (state, action: PayloadAction<number>) => {

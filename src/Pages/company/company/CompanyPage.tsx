@@ -26,10 +26,12 @@ const CompanyPage = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [photoData, setPhotoData] = useState<File | null>(null);
   const handleUpdateInfo = async (values: UpdateCompany) => {
+    if (!company) return;
     await dispatch(updateInfoCompanyAsync(values, company.company_id));
     setIsEdit(false);
   };
   const handleSubmit = async () => {
+    if (!company) return;
     await dispatch(setNewAvatarAsync(photoData, company.company_id));
   };
 
@@ -44,24 +46,25 @@ const CompanyPage = () => {
   }, [id]);
 
   const handleDelete = async () => {
+    if (!company) return;
     if (window.confirm('Are you sure you want to delete this company?')) {
       await dispatch(deleteCompanyAsync(company.company_id));
       navigate('/companies');
     }
   };
 
-  let initialCompany = {
-    company_name: company.company_name,
-    company_title: company.company_title || '',
-    company_description: company.company_description,
-    company_city: company.company_city || '',
-    company_phone: company.company_phone || '',
-    company_links: company.company_links || [],
+  let initialCompany: UpdateCompany = {
+    company_name: company?.company_name || '',
+    company_title: company?.company_title || '',
+    company_description: company?.company_description || '',
+    company_city: company?.company_city || '',
+    company_phone: company?.company_phone || '',
+    company_links: company?.company_links || [],
   };
 
   return (
     <>
-      {company.company_owner && (
+      {company && (
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           <>
