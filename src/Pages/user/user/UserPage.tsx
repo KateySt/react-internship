@@ -63,7 +63,7 @@ const UserPage = () => {
 
   return (
     <>
-      {currentUser.user_firstname && (
+      {currentUser && (
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           {user.user_id === currentUser.user_id && <MdDeleteForever onClick={handleDelete} size={36} />}

@@ -11,7 +11,7 @@ export interface UserState {
   accessToken: string | null;
   users: UserList,
   isLogin: boolean;
-  currentUser: User;
+  currentUser: User | null;
 }
 
 const initialState: UserState = {
@@ -26,7 +26,7 @@ const initialState: UserState = {
     },
   },
   isLogin: false,
-  currentUser: {} as User,
+  currentUser: null,
 };
 
 export const UsersSlice = createSlice({
