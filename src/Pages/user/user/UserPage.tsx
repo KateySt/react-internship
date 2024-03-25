@@ -63,17 +63,12 @@ const UserPage = () => {
 
   return (
     <>
-      {currentUser.user_firstname && (
+      {currentUser && (
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           {user.user_id === currentUser.user_id && <MdDeleteForever onClick={handleDelete} size={36} />}
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
-            {!isEdit &&
-              <UserInfo user={currentUser}
-                        isEditable={user.user_id === currentUser.user_id}
-                        onEditClick={() => setIsEdit(true)} />
-            }
-            {isEdit && (
+            {isEdit ?
               <UserEditForm
                 initialValuesUpdateInfo={{
                   user_firstname: user.user_firstname,
@@ -95,7 +90,11 @@ const UserPage = () => {
                 cities={cities}
                 onEditClick={() => setIsEdit(false)}
               />
-            )}
+              :
+              <UserInfo user={currentUser}
+                        isEditable={user.user_id === currentUser.user_id}
+                        onEditClick={() => setIsEdit(true)} />
+            }
           </Grid>
         </Grid>
       )}

@@ -11,15 +11,22 @@ export interface UserState {
   accessToken: string | null;
   users: UserList,
   isLogin: boolean;
-  currentUser: User;
+  currentUser: User | null;
 }
 
 const initialState: UserState = {
   user: {} as User,
   accessToken: null,
-  users: {} as UserList,
+  users: {
+    users: [],
+    pagination: {
+      current_page: 1,
+      total_page: 1,
+      total_results: 0,
+    },
+  },
   isLogin: false,
-  currentUser: {} as User,
+  currentUser: null,
 };
 
 export const UsersSlice = createSlice({

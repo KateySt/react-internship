@@ -7,7 +7,12 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { ErrorMessage, Field } from 'formik';
 import { FormControl, InputLabel } from '@mui/material';
 
-const PasswordInput: React.FC<{ name: string, value: string, onChange: (e: any) => void, error: boolean | undefined }> =
+const PasswordInput: React.FC<{
+  name: string,
+  value: string,
+  onChange: (e: React.ChangeEvent<any>) => void,
+  error: boolean | undefined
+}> =
   ({ name, value, onChange, error }) => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const formatName = (name: string) => {

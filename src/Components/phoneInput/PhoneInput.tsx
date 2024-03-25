@@ -7,28 +7,30 @@ import 'react-phone-input-2/lib/material.css';
 const PhoneInput: React.FC<{
   value: string,
   error: string | undefined
+  name: string,
 }> = ({
         value,
         error,
+        name,
       }) => {
   const { setFieldValue } = useFormikContext();
   return (
     <>
       <ReactPhoneInput
         inputProps={{
-          name: 'user_phone',
-          id: 'user-phone',
+          name: name,
+          id: name,
           autoFocus: true,
           error: !!error,
-          style: { height: '60px', width: '100%'},
+          style: { height: '60px', width: '100%' },
         }}
         country="ua"
         disableSearchIcon
         enableSearch
         value={value}
-        onChange={(value: string) => setFieldValue('user_phone', value)}
+        onChange={(value: string) => setFieldValue(name, value)}
       />
-      <ErrorMessage name="user_phone" component="p" />
+      <ErrorMessage name={name} component="p" />
     </>
   );
 };

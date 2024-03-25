@@ -69,7 +69,7 @@ const AuthorizationPage: React.FC = () => {
       mt={10}
     >
       <Formik
-        initialValues={{ email: 'use1r@example.com', password: '1234567890' }}
+        initialValues={{ email: '', password: '' }}
         onSubmit={handleLogin}
         validationSchema={validationSchema}
       >

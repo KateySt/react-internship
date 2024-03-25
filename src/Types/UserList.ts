@@ -1,10 +1,7 @@
 import { UserInfo } from './UserInfo';
+import { Pagination } from './Pagination';
 
 export interface UserList {
   users: UserInfo[],
-  pagination: {
-    current_page: number,
-    total_page: number,
-    total_results: number
-  }
+  pagination: Pagination;
 }
