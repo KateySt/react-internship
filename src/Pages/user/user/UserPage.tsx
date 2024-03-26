@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import {
   deleteProfileAsync,
+  getListCompaniesAsync,
   getUserAsync,
+  selectCompanies,
   selectCurrentUser,
   selectUser,
   setInfoAsync,
@@ -18,6 +20,13 @@ import { cities } from 'Utils/cities';
 import UserEditForm from 'Components/user/UserEditForm';
 import UserInfo from 'Components/user/UserInfo';
 import { MdDeleteForever } from 'react-icons/md';
+import { FaThList } from 'react-icons/fa';
+import {
+  declineActionAsync,
+  getListInvitedCompanyAsync,
+  selectInvitedCompany,
+} from '../../../Store/features/action/ActionSlice';
+import DeclineAction from '../../../Components/action/DeclineAction';
 
 const validationSchema = Yup.object().shape({
   user_links: Yup.array().optional(),
@@ -40,11 +49,23 @@ const UserPage = () => {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectUser);
+  const companyInvites = useAppSelector(selectInvitedCompany);
+  const companies = useAppSelector(selectCompanies);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isShowListInvite, setIsShowListInvite] = useState<boolean>(false);
+
+  const handleDeclineAction = async (id: number) => {
+    await dispatch(declineActionAsync(id));
+    await dispatch(getListInvitedCompanyAsync(Number(id)));
+  };
   const handleUpdateInfo = async (values: UpdateUserInfo) => {
     await dispatch(setInfoAsync(values, user.user_id));
     setIsEdit(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsShowListInvite(false);
   };
 
   const handleUpdatePassword = async (values: any) => {
@@ -59,6 +80,7 @@ const UserPage = () => {
 
   useEffect(() => {
     dispatch(getUserAsync(Number(id)));
+    dispatch(getListCompaniesAsync(Number(id)));
   }, [id, user]);
 
   return (
@@ -66,7 +88,10 @@ const UserPage = () => {
       {currentUser && (
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
-          {user.user_id === currentUser.user_id && <MdDeleteForever onClick={handleDelete} size={36} />}
+          {user.user_id === currentUser.user_id && <>
+            <MdDeleteForever onClick={handleDelete} size={36} />
+            <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
+          </>}
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
             {isEdit ?
               <UserEditForm
@@ -93,9 +118,17 @@ const UserPage = () => {
               :
               <UserInfo user={currentUser}
                         isEditable={user.user_id === currentUser.user_id}
-                        onEditClick={() => setIsEdit(true)} />
+                        onEditClick={() => setIsEdit(true)}
+                        companies={companies}
+              />
             }
           </Grid>
+
+          <DeclineAction
+            isShow={isShowListInvite}
+            handleClose={handleCloseModal}
+            invitedUsers={companyInvites}
+            handleDeclineAction={handleDeclineAction} />
         </Grid>
       )}
     </>

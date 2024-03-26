@@ -3,14 +3,16 @@ import { Avatar, List, ListItem, ListItemText, Typography } from '@mui/material'
 import { User } from 'Types/User';
 import 'react-phone-input-2/lib/material.css';
 import StyleButton from '../button/StyleButton';
+import { CompanyInvited } from 'Types/CompanyInvited';
 
 interface UserInfoProps {
   user: User;
   isEditable: boolean;
   onEditClick: () => void;
+  companies: CompanyInvited[];
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick, companies }) => {
   return (
     <>
       {!!user.user_avatar ? (
@@ -44,7 +46,18 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick }) =>
           ))}
         </List>
       </Typography>
-      {isEditable && <StyleButton text={"Edit"} onClick={onEditClick}/>}
+      <Typography variant="body1" color="textSecondary">
+        companies:
+        <List>
+          {companies && companies.map((company: CompanyInvited, index) => (
+            <ListItem key={index}>
+              <ListItemText primary={company.company_name} />
+              <ListItemText primary={company.company_title} />
+            </ListItem>
+          ))}
+        </List>
+      </Typography>
+      {isEditable && <StyleButton text={'Edit'} onClick={onEditClick} />}
     </>
   );
 };

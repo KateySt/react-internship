@@ -5,6 +5,7 @@ import { UserList } from 'Types/UserList';
 import { User } from 'Types/User';
 import { NewUser } from 'Types/NewUser';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
+import { CompanyInvited } from 'Types/CompanyInvited';
 
 export interface UserState {
   user: User,
@@ -12,6 +13,7 @@ export interface UserState {
   users: UserList,
   isLogin: boolean;
   currentUser: User | null;
+  companies: CompanyInvited[];
 }
 
 const initialState: UserState = {
@@ -27,6 +29,7 @@ const initialState: UserState = {
   },
   isLogin: false,
   currentUser: null,
+  companies: [],
 };
 
 export const UsersSlice = createSlice({
@@ -54,11 +57,24 @@ export const UsersSlice = createSlice({
     setInfo: (state, action: PayloadAction<UpdateUserInfo>) => {
       state.user = { ...state.user, ...action.payload };
     },
+    setCompanies: (state, action: PayloadAction<CompanyInvited[]>) => {
+      state.companies = action.payload;
+    },
   },
 });
 
-export const { setUser, setInfo, setNewAvatar, setProfile, setIsLogin, setToken, setUsers } = UsersSlice.actions;
+export const {
+  setUser,
+  setCompanies,
+  setInfo,
+  setNewAvatar,
+  setProfile,
+  setIsLogin,
+  setToken,
+  setUsers,
+} = UsersSlice.actions;
 
+export const selectCompanies = (state: RootState) => state.users.companies;
 export const selectUser = (state: RootState) => state.users.user;
 export const selectCurrentUser = (state: RootState) => state.users.currentUser;
 export const selectUsers = (state: RootState) => state.users.users;
@@ -98,7 +114,7 @@ export const getUserAsync = (id: number) => async (dispatch: AppDispatch) => {
   await api.users.details(id).then((el) => dispatch(setProfile(el.result)));
 };
 
-export const getListUsersAsync = (param: object) => async (dispatch: AppDispatch) => {
+export const getListUsersAsync = (param?: object) => async (dispatch: AppDispatch) => {
   await api.users.list(param).then((el) => dispatch(setUsers(el.result)));
 };
 
@@ -109,5 +125,9 @@ export const setTokenAsync = (email: string, password: string) => async (dispatc
 
 export const createUserAsync = (user: NewUser) => async () => {
   await api.users.create(user);
+};
+
+export const getListCompaniesAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.users.listCompanies(id).then(el => dispatch(setCompanies(el.result.companies)));
 };
 export default UsersSlice.reducer;
