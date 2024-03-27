@@ -74,7 +74,7 @@ export const {
   setUsers,
 } = UsersSlice.actions;
 
-export const selectCompanies = (state: RootState) => state.users.companies;
+export const selectUserCompanies = (state: RootState) => state.users.companies;
 export const selectUser = (state: RootState) => state.users.user;
 export const selectCurrentUser = (state: RootState) => state.users.currentUser;
 export const selectUsers = (state: RootState) => state.users.users;

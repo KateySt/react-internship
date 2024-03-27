@@ -5,10 +5,12 @@ import { CompanyList } from 'Types/CompanyList';
 import { CompanyProfile } from 'Types/CompanyProfile';
 import { Company } from 'Types/Company';
 import { UpdateCompany } from 'Types/UpdateCompany';
+import { UserInvited } from 'Types/UserInvited';
 
 export interface CompanyState {
   companies: CompanyList;
   company: CompanyProfile | null;
+  members: UserInvited[];
 }
 
 const initialState: CompanyState = {
@@ -21,6 +23,7 @@ const initialState: CompanyState = {
     },
   },
   company: null,
+  members: [],
 };
 
 export const CompaniesSlice = createSlice({
@@ -47,14 +50,27 @@ export const CompaniesSlice = createSlice({
     deleteCompany: (state, action: PayloadAction<number>) => {
       state.companies.companies = state.companies.companies.filter(company => company.company_id !== action.payload);
     },
+    setMembers: (state, action: PayloadAction<UserInvited[]>) => {
+      state.members = action.payload;
+    },
   },
 });
 
-export const { setCompanies, deleteCompany, setNewAvatar, setInfo, addCompany, setCompany } = CompaniesSlice.actions;
+export const {
+  setCompanies,
+  setMembers,
+  deleteCompany,
+  setNewAvatar,
+  setInfo,
+  addCompany,
+  setCompany,
+} = CompaniesSlice.actions;
 
 export const selectCompanies = (state: RootState) => state.companies.companies;
 
 export const selectCompany = (state: RootState) => state.companies.company;
+
+export const selectMembers = (state: RootState) => state.companies.members;
 
 export const getListCompanyAsync = (param: object) => async (dispatch: AppDispatch) => {
   await api.companies.list(param).then(el => dispatch(setCompanies(el.result)));
@@ -97,6 +113,10 @@ export const setNewAvatarAsync = (avatar: File | null, id: number) => async (dis
 
 export const deleteCompanyAsync = (id: number) => async (dispatch: AppDispatch) => {
   await api.companies.deleteCompany(id).then(() => dispatch(deleteCompany(id)));
+};
+
+export const getListMembersAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.companies.listMembers(id).then(el => dispatch(setMembers(el.result.users)));
 };
 
 export default CompaniesSlice.reducer;

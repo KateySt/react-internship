@@ -80,6 +80,8 @@ const companies = {
   updateInfo: (data: UpdateCompany, id: number) =>
     request.put<Response<{ company_id: number }>>(`/company/${id}/update_info`, data),
   updateAvatar: (data: FormData, id: number) => request.put<Response<string>>(`/company/${id}/update_avatar`, data),
+  listRequests: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/requests_list`),
+  listMembers: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/members_list`),
 };
 
 const users = {
@@ -95,15 +97,23 @@ const users = {
     request.put<Response<{ user_id: number }>>(`/user/${id}/update_password`, data),
   delete: (id: number) => request.delete<Response<string>>(`/user/${id}`),
   listCompanies: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/companies_list`),
+  listRequests: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/requests_list`),
 };
 
 const actions = {
+  blockRequest: (id: number) => request.get<Response<null>>(`/action/${id}/add_to_block`),
   declineAction: (id: number) => request.get<Response<null>>(`/action/${id}/decline_action`),
   createActionFromCompany: (companyId: number, userId: number) => request.get<Response<{
     action_id: number
   }>>(`/action/create_from_company/${companyId}/user/${userId}`),
+  createActionFromUser: (id: number) => request.get<Response<{
+    action_id: number
+  }>>(`/action/create_from_user/company/${id}`),
   companyListInvites: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/invites_list`),
   userListInvites: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/invites_list`),
+  acceptInvite: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/accept_invite`),
+  acceptRequest: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/accept_request`),
+  leaveCompany: (id: number) => request.get<Response<string>>(`/action/${id}/leave_company`),
 };
 
 const api = {

@@ -10,9 +10,10 @@ interface UserInfoProps {
   isEditable: boolean;
   onEditClick: () => void;
   companies: CompanyInvited[];
+  handleLeaveCompany: (id: number) => void;
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick, companies }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick, companies, handleLeaveCompany }) => {
   return (
     <>
       {!!user.user_avatar ? (
@@ -46,17 +47,19 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick, comp
           ))}
         </List>
       </Typography>
-      <Typography variant="body1" color="textSecondary">
-        companies:
-        <List>
-          {companies && companies.map((company: CompanyInvited, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={company.company_name} />
-              <ListItemText primary={company.company_title} />
-            </ListItem>
-          ))}
-        </List>
-      </Typography>
+      {isEditable && companies.length > 0 && (
+          <Typography variant="body1" color="textSecondary">
+            companies:
+            <List>
+              {companies.map((company: CompanyInvited, index) => (
+                <ListItem key={index} onClick={() => handleLeaveCompany(company.action_id)}>
+                  <ListItemText primary={company.company_name} />
+                  <ListItemText primary={company.company_title} />
+                </ListItem>
+              ))}
+            </List>
+          </Typography>
+        )}
       {isEditable && <StyleButton text={'Edit'} onClick={onEditClick} />}
     </>
   );

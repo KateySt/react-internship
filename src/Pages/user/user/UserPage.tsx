@@ -5,9 +5,9 @@ import {
   deleteProfileAsync,
   getListCompaniesAsync,
   getUserAsync,
-  selectCompanies,
   selectCurrentUser,
   selectUser,
+  selectUserCompanies,
   setInfoAsync,
   setPasswordAsync,
 } from 'Store/features/user/UsersSlice';
@@ -22,11 +22,22 @@ import UserInfo from 'Components/user/UserInfo';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaThList } from 'react-icons/fa';
 import {
+  acceptInviteAsync,
+  createActionFromUserAsync,
   declineActionAsync,
   getListInvitedCompanyAsync,
-  selectInvitedCompany,
-} from '../../../Store/features/action/ActionSlice';
-import DeclineAction from '../../../Components/action/DeclineAction';
+  getListRequestsCompaniesAsync,
+  leaveCompanyAsync,
+  selectInvitedCompanies,
+  selectRequestsCompanies,
+} from 'Store/features/action/ActionSlice';
+import Action from 'Components/action/Action';
+import { SelectChangeEvent } from '@mui/material/Select';
+import { getListCompanyAsync, selectCompanies } from 'Store/features/company/CompaniesSlice';
+import { Company } from 'Types/Company';
+import { FcInvite } from 'react-icons/fc';
+import { FaCodePullRequest } from 'react-icons/fa6';
+import SendRequest from '../../../Components/action/SendRequest';
 
 const validationSchema = Yup.object().shape({
   user_links: Yup.array().optional(),
@@ -49,14 +60,50 @@ const UserPage = () => {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectUser);
-  const companyInvites = useAppSelector(selectInvitedCompany);
-  const companies = useAppSelector(selectCompanies);
+  const userCompanies = useAppSelector(selectUserCompanies);
+  const companyInvites = useAppSelector(selectInvitedCompanies);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isShowListInvite, setIsShowListInvite] = useState<boolean>(false);
+  const companies = useAppSelector(selectCompanies);
+  const [param, setParam] = useState<{ page: number, page_size: number }>({ page: 1, page_size: 10 });
+  const [isShow, setIsShow] = useState<boolean>(false);
+  const [companyId, setCompanyId] = useState<number>(0);
+  const [isShowListRequests, setIsShowListRequests] = useState<boolean>(false);
+  const companiesRequests = useAppSelector(selectRequestsCompanies);
+  const handleCloseListRequests = () => {
+    setIsShowListRequests(false);
+  };
 
-  const handleDeclineAction = async (id: number) => {
-    await dispatch(declineActionAsync(id));
+  const handleBlockRequest = async (actionId: number) => {
+    await dispatch(declineActionAsync(actionId));
+    await dispatch(getListRequestsCompaniesAsync(Number(id)));
+  };
+
+  const handleSendInvitation = async () => {
+    if (!companyId) return;
+    await dispatch(createActionFromUserAsync(companyId));
+    setIsShow(false);
+  };
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setCompanyId(Number(event.target.value));
+  };
+
+  useEffect(() => {
+    dispatch(getListCompanyAsync(param));
+  }, [param]);
+
+  useEffect(() => {
+    if (companies.pagination
+      && companies.pagination.total_results !== param.page_size
+      && companies.pagination.total_results !== 0) {
+      setParam(prev => ({ ...prev, page_size: companies.pagination.total_results }));
+    }
+  }, [companies]);
+
+  const handleDeclineAction = async (actionId: number) => {
+    await dispatch(declineActionAsync(actionId));
     await dispatch(getListInvitedCompanyAsync(Number(id)));
   };
   const handleUpdateInfo = async (values: UpdateUserInfo) => {
@@ -80,8 +127,29 @@ const UserPage = () => {
 
   useEffect(() => {
     dispatch(getUserAsync(Number(id)));
-    dispatch(getListCompaniesAsync(Number(id)));
-  }, [id, user]);
+  }, [id]);
+
+  useEffect(() => {
+    if (currentUser && user.user_id === currentUser.user_id) {
+      dispatch(getListCompaniesAsync(Number(id)));
+      dispatch(getListInvitedCompanyAsync(Number(id)));
+      dispatch(getListRequestsCompaniesAsync(Number(id)));
+    }
+  }, [currentUser]);
+
+  const handleAcceptInviteAction = async (actionId: number) => {
+    await dispatch(acceptInviteAsync(actionId));
+    await dispatch(getListInvitedCompanyAsync(Number(id)));
+    await dispatch(getUserAsync(Number(id)));
+  };
+
+  const handleLeaveCompany = async (id: number) => {
+    if (currentUser && user.user_id !== currentUser.user_id) return;
+    if (window.confirm('Are you sure you want to leave this company?')) {
+      await dispatch(leaveCompanyAsync(id));
+      await dispatch(getUserAsync(Number(id)));
+    }
+  };
 
   return (
     <>
@@ -90,7 +158,9 @@ const UserPage = () => {
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           {user.user_id === currentUser.user_id && <>
             <MdDeleteForever onClick={handleDelete} size={36} />
+            <FcInvite onClick={() => setIsShow(!isShow)} size={36} />
             <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
+            <FaCodePullRequest onClick={() => setIsShowListRequests(!isShowListRequests)} size={32} />
           </>}
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
             {isEdit ?
@@ -119,16 +189,37 @@ const UserPage = () => {
               <UserInfo user={currentUser}
                         isEditable={user.user_id === currentUser.user_id}
                         onEditClick={() => setIsEdit(true)}
-                        companies={companies}
+                        companies={userCompanies}
+                        handleLeaveCompany={handleLeaveCompany}
               />
             }
           </Grid>
 
-          <DeclineAction
+          <Action
             isShow={isShowListInvite}
             handleClose={handleCloseModal}
-            invitedUsers={companyInvites}
-            handleDeclineAction={handleDeclineAction} />
+            data={companyInvites}
+            handleDeclineAction={handleDeclineAction}
+            handleAcceptAction={handleAcceptInviteAction}
+          />
+
+          <SendRequest
+            handleCloseModal={() => setIsShow(false)}
+            isShow={isShow}
+            id={companyId}
+            handleChange={handleChange}
+            data={companies.companies}
+            label={'Company'}
+            handleSendRequest={handleSendInvitation}
+          />
+
+          <Action
+            isShow={isShowListRequests}
+            handleClose={handleCloseListRequests}
+            data={companiesRequests}
+            handleDeclineAction={handleBlockRequest}
+          />
+
         </Grid>
       )}
     </>
