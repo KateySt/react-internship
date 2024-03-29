@@ -52,9 +52,10 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick, comp
             companies:
             <List>
               {companies.map((company: CompanyInvited, index) => (
-                <ListItem key={index} onClick={() => handleLeaveCompany(company.action_id)}>
+                <ListItem key={index} >
                   <ListItemText primary={company.company_name} />
                   <ListItemText primary={company.company_title} />
+                  <ListItemText primary={'Leave'} onClick={() => handleLeaveCompany(company.action_id)} />
                 </ListItem>
               ))}
             </List>

@@ -202,21 +202,22 @@ const CompanyPage = () => {
                 )}
                 {user.user_id === company.company_owner.user_id &&
                   members && (<Typography variant="body1" color="textSecondary">
-                    members:
-                    <List>
-                      {members.map((member: UserInvited, index: number) => (
-                        <ListItem key={index} onClick={() => {
-                          if (user.user_id !== member.user_id) {
-                            handleDeleteUser(member.action_id);
-                          }
-                        }}>
-                          <ListItemText primary={member.user_firstname} />
-                          <ListItemText primary={member.user_lastname} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Typography>
-                )}
+                      members:
+                      <List>
+                        {members.map((member: UserInvited, index: number) => (
+                          <ListItem key={index}>
+                            <ListItemText primary={member.user_firstname} />
+                            <ListItemText primary={member.user_lastname} />
+                            <ListItemText primary={user.user_id !== member.user_id && 'Delete'} onClick={() => {
+                              if (user.user_id !== member.user_id) {
+                                handleDeleteUser(member.action_id);
+                              }
+                            }} />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Typography>
+                  )}
                 <SendRequest
                   handleCloseModal={handleCloseModal}
                   isShow={isShowSendInvite}
