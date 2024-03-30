@@ -60,6 +60,9 @@ export const UsersSlice = createSlice({
     setCompanies: (state, action: PayloadAction<CompanyInvited[]>) => {
       state.companies = action.payload;
     },
+    leaveCompany: (state, action: PayloadAction<number>) => {
+      state.companies = state.companies.filter(company => company.action_id !== action.payload);
+    },
   },
 });
 
@@ -72,6 +75,7 @@ export const {
   setIsLogin,
   setToken,
   setUsers,
+  leaveCompany,
 } = UsersSlice.actions;
 
 export const selectUserCompanies = (state: RootState) => state.users.companies;

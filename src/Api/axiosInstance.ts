@@ -4,12 +4,12 @@ import { User } from 'Types/User';
 import { UserList } from 'Types/UserList';
 import { NewUser } from 'Types/NewUser';
 import { Response } from 'Types/Response';
-import { UpdateUserInfo } from '../Types/UpdateUserInfo';
-import { CompanyList } from '../Types/CompanyList';
-import { CompanyProfile } from '../Types/CompanyProfile';
-import { UpdateCompany } from '../Types/UpdateCompany';
-import { UserInvited } from '../Types/UserInvited';
-import { CompanyInvited } from '../Types/CompanyInvited';
+import { UpdateUserInfo } from 'Types/UpdateUserInfo';
+import { CompanyList } from 'Types/CompanyList';
+import { CompanyProfile } from 'Types/CompanyProfile';
+import { UpdateCompany } from 'Types/UpdateCompany';
+import { UserInvited } from 'Types/UserInvited';
+import { CompanyInvited } from 'Types/CompanyInvited';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -101,7 +101,6 @@ const users = {
 };
 
 const actions = {
-  blockRequest: (id: number) => request.get<Response<null>>(`/action/${id}/add_to_block`),
   declineAction: (id: number) => request.get<Response<null>>(`/action/${id}/decline_action`),
   createActionFromCompany: (companyId: number, userId: number) => request.get<Response<{
     action_id: number

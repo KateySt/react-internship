@@ -3,6 +3,8 @@ import { AppDispatch, RootState } from '../../store';
 import api from 'Api/axiosInstance';
 import { UserInvited } from 'Types/UserInvited';
 import { CompanyInvited } from 'Types/CompanyInvited';
+import { leaveCompany } from '../user/UsersSlice';
+import { deleteMembers } from '../company/CompaniesSlice';
 
 export interface ActionState {
   usersInvited: UserInvited[];
@@ -34,10 +36,31 @@ export const ActionSlice = createSlice({
     setRequestsCompanies: (state, action: PayloadAction<CompanyInvited[]>) => {
       state.companiesRequests = action.payload;
     },
+    deleteInvitedUsers: (state, action: PayloadAction<number>) => {
+      state.usersInvited = state.usersInvited.filter(user => user.action_id !== action.payload);
+    },
+    deleteInvitedCompanies: (state, action: PayloadAction<number>) => {
+      state.companiesInvited = state.companiesInvited.filter(company => company.action_id !== action.payload);
+    },
+    deleteRequestsUsers: (state, action: PayloadAction<number>) => {
+      state.userRequests = state.userRequests.filter(user => user.action_id !== action.payload);
+    },
+    deleteCompaniesRequests: (state, action: PayloadAction<number>) => {
+      state.companiesRequests = state.companiesRequests.filter(company => company.action_id !== action.payload);
+    },
   },
 });
 
-export const { setInvitedUsers, setRequestsCompanies, setRequestsUsers, setInvitedCompanies } = ActionSlice.actions;
+export const {
+  setInvitedUsers,
+  deleteCompaniesRequests,
+  deleteRequestsUsers,
+  deleteInvitedUsers,
+  deleteInvitedCompanies,
+  setRequestsCompanies,
+  setRequestsUsers,
+  setInvitedCompanies,
+} = ActionSlice.actions;
 
 export const selectInvitedUser = (state: RootState) => state.actions.usersInvited;
 export const selectRequestsUser = (state: RootState) => state.actions.userRequests;
@@ -59,12 +82,13 @@ export const getListInvitedCompanyAsync = (userId: number) => async (dispatch: A
   await api.actions.userListInvites(userId).then(el => dispatch(setInvitedCompanies(el.result.companies)));
 };
 
-export const declineActionAsync = (id: number) => async () => {
-  await api.actions.declineAction(id);
-};
-
-export const blockRequestAsync = (id: number) => async () => {
-  await api.actions.blockRequest(id);
+export const declineActionAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.actions.declineAction(id).then(() => {
+    dispatch(deleteInvitedUsers(id));
+    dispatch(deleteRequestsUsers(id));
+    dispatch(deleteCompaniesRequests(id));
+    dispatch(deleteInvitedCompanies(id));
+  });
 };
 
 export const getListRequestsUsersAsync = (companyId: number) => async (dispatch: AppDispatch) => {
@@ -75,16 +99,19 @@ export const getListRequestsCompaniesAsync = (userId: number) => async (dispatch
   await api.users.listRequests(userId).then(el => dispatch(setRequestsCompanies(el.result.companies)));
 };
 
-export const acceptInviteAsync = (id: number) => async () => {
-  await api.actions.acceptInvite(id);
+export const acceptInviteAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.actions.acceptInvite(id).then(el => dispatch(deleteInvitedUsers(el.result.action_id)));
 };
 
-export const acceptRequestAsync = (id: number) => async () => {
-  await api.actions.acceptRequest(id);
+export const acceptRequestAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.actions.acceptRequest(id).then(el => dispatch(deleteCompaniesRequests(el.result.action_id)));
 };
 
-export const leaveCompanyAsync = (id: number) => async () => {
-  await api.actions.leaveCompany(id);
+export const leaveCompanyAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.actions.leaveCompany(id).then(() => {
+    dispatch(leaveCompany(id));
+    dispatch(deleteMembers(id));
+  });
 };
 
 export default ActionSlice.reducer;

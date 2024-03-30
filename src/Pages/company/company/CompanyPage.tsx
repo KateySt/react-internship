@@ -23,7 +23,6 @@ import {
   acceptRequestAsync,
   createActionFromCompanyAsync,
   declineActionAsync,
-  getListInvitedCompanyAsync,
   getListInvitedUsersAsync,
   getListRequestsUsersAsync,
   leaveCompanyAsync,
@@ -126,14 +125,10 @@ const CompanyPage = () => {
 
   const handleBlockRequest = async (id: number) => {
     await dispatch(declineActionAsync(id));
-    if (!company) return;
-    await dispatch(getListRequestsUsersAsync(company.company_id));
   };
 
   const handleDeclineAction = async (id: number) => {
     await dispatch(declineActionAsync(id));
-    if (!company) return;
-    await dispatch(getListInvitedUsersAsync(company.company_id));
   };
 
   let initialCompany: UpdateCompany = {
@@ -147,15 +142,13 @@ const CompanyPage = () => {
 
   const handleAcceptRequestAction = async (actionId: number) => {
     await dispatch(acceptRequestAsync(actionId));
-    await dispatch(getListInvitedCompanyAsync(Number(id)));
     await dispatch(getCompanyAsync(Number(id)));
   };
 
-  const handleDeleteUser = async (id: number) => {
+  const handleDeleteUser = async (actionId: number) => {
     if (company && user.user_id !== company.company_owner.user_id) return;
     if (window.confirm('Are you sure you want to delete this user?')) {
-      await dispatch(leaveCompanyAsync(id));
-      await dispatch(getCompanyAsync(Number(id)));
+      await dispatch(leaveCompanyAsync(actionId));
     }
   };
 

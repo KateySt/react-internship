@@ -4,11 +4,13 @@ import { Grid, Typography } from '@mui/material';
 import { TbHttpDelete } from 'react-icons/tb';
 import StyleButton from '../button/StyleButton';
 import { AiOutlineCheck } from 'react-icons/ai';
+import { UserInvited } from 'Types/UserInvited';
+import { CompanyInvited } from 'Types/CompanyInvited';
 
 interface ActionProps {
   isShow: boolean;
   handleClose: () => void;
-  data: any[];
+  data: (UserInvited | CompanyInvited)[];
   handleDeclineAction: (id: number) => void;
   handleAcceptAction?: (id: number) => void;
 }

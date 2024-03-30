@@ -34,10 +34,9 @@ import {
 import Action from 'Components/action/Action';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { getListCompanyAsync, selectCompanies } from 'Store/features/company/CompaniesSlice';
-import { Company } from 'Types/Company';
 import { FcInvite } from 'react-icons/fc';
 import { FaCodePullRequest } from 'react-icons/fa6';
-import SendRequest from '../../../Components/action/SendRequest';
+import SendRequest from 'Components/action/SendRequest';
 
 const validationSchema = Yup.object().shape({
   user_links: Yup.array().optional(),
@@ -77,7 +76,6 @@ const UserPage = () => {
 
   const handleBlockRequest = async (actionId: number) => {
     await dispatch(declineActionAsync(actionId));
-    await dispatch(getListRequestsCompaniesAsync(Number(id)));
   };
 
   const handleSendInvitation = async () => {
@@ -104,7 +102,6 @@ const UserPage = () => {
 
   const handleDeclineAction = async (actionId: number) => {
     await dispatch(declineActionAsync(actionId));
-    await dispatch(getListInvitedCompanyAsync(Number(id)));
   };
   const handleUpdateInfo = async (values: UpdateUserInfo) => {
     await dispatch(setInfoAsync(values, user.user_id));
@@ -130,24 +127,20 @@ const UserPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (currentUser && user.user_id === currentUser.user_id) {
-      dispatch(getListCompaniesAsync(Number(id)));
-      dispatch(getListInvitedCompanyAsync(Number(id)));
-      dispatch(getListRequestsCompaniesAsync(Number(id)));
-    }
-  }, [currentUser]);
+    dispatch(getListCompaniesAsync(Number(id)));
+    dispatch(getListInvitedCompanyAsync(Number(id)));
+    dispatch(getListRequestsCompaniesAsync(Number(id)));
+  }, [companyId]);
 
   const handleAcceptInviteAction = async (actionId: number) => {
     await dispatch(acceptInviteAsync(actionId));
-    await dispatch(getListInvitedCompanyAsync(Number(id)));
     await dispatch(getUserAsync(Number(id)));
   };
 
-  const handleLeaveCompany = async (id: number) => {
+  const handleLeaveCompany = async (actionId: number) => {
     if (currentUser && user.user_id !== currentUser.user_id) return;
     if (window.confirm('Are you sure you want to leave this company?')) {
-      await dispatch(leaveCompanyAsync(id));
-      await dispatch(getUserAsync(Number(id)));
+      await dispatch(leaveCompanyAsync(actionId));
     }
   };
 

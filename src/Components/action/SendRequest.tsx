@@ -6,6 +6,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Grid, MenuItem } from '@mui/material';
 import StyleButton from '../button/StyleButton';
 import Typography from '@mui/material/Typography';
+import { UserInfo } from 'Types/UserInfo';
+import { Company } from 'Types/Company';
 
 interface SendInviteProps {
   handleCloseModal: () => void;
@@ -13,7 +15,7 @@ interface SendInviteProps {
   isShow: boolean;
   id: number;
   handleChange: (event: SelectChangeEvent) => void;
-  data: any[];
+  data: (UserInfo | Company)[];
   handleSendRequest: () => void;
 }
 
