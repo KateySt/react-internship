@@ -197,10 +197,10 @@ const CompanyPage = () => {
                     <FcInvite onClick={() => setIsShowSendInvite(!isShowSendInvite)} size={36} />
                   </Grid>
                   <Grid item xs={2}>
-                    <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
+                    <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={30} />
                   </Grid>
                   <Grid item xs={2}>
-                    <FaCodePullRequest onClick={() => setIsShowListRequests(!isShowListRequests)} size={32} />
+                    <FaCodePullRequest onClick={() => setIsShowListRequests(!isShowListRequests)} size={30} />
                   </Grid>
                 </Grid>
               </>}
