@@ -5,7 +5,7 @@ import { createCompanyAsync, getListCompanyAsync, selectCompanies } from 'Store/
 import CompanyCard from 'Components/cartCompany/CompanyCard';
 import StyleButton from 'Components/button/StyleButton';
 import Modal from 'Components/modal';
-import { Grid, TextField } from '@mui/material';
+import { Grid, SpeedDial, SpeedDialIcon, TextField } from '@mui/material';
 import { ErrorMessage, Form, Formik } from 'formik';
 
 const CompaniesPage = () => {
@@ -43,7 +43,76 @@ const CompaniesPage = () => {
 
   return (
     <>
-      <StyleButton text={'Add company'} onClick={handleOpenModal} />
+      <SpeedDial
+        ariaLabel="SpeedDial tooltip"
+        sx={{ position: 'absolute', right: 16}}
+        icon={<SpeedDialIcon />}
+        onClose={handleCloseModal}
+        onOpen={handleOpenModal}
+        open={isShow}
+        FabProps={{
+          sx: {
+            bgcolor: 'secondary.main',
+            '&:hover': {
+              bgcolor: 'secondary.main',
+            },
+          },
+        }}
+      >
+        <Modal isOpen={isShow} onClose={handleCloseModal}>
+          <h2>Add company</h2>
+
+          <Formik
+            initialValues={{
+              company_name: '',
+              is_visible: true,
+              company_description: '',
+            }}
+            onSubmit={handleCreateCompany}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+              <Form>
+                <TextField
+                  id="outlined-required"
+                  label="Name"
+                  variant="outlined"
+                  name="company_name"
+                  value={values.company_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  margin="normal"
+                  fullWidth
+                  error={touched.company_name && !!errors.company_name}
+                />
+                <ErrorMessage name="company_name" component="p" />
+                <TextField
+                  id="outlined-multiline-flexible"
+                  label="Description"
+                  name="company_description"
+                  value={values.company_description}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  margin="normal"
+                  fullWidth
+                  multiline
+                  maxRows={4}
+                  error={touched.company_description && !!errors.company_description}
+                />
+                <ErrorMessage name="company_description" component="p" />
+
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <StyleButton text={'Create'} type={'submit'} />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <StyleButton onClick={handleCloseModal} text={'Close'} />
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
+        </Modal>
+      </SpeedDial>
       <PaginationComponent
         data={companies.companies}
         pagination={companies.pagination}
@@ -51,59 +120,6 @@ const CompaniesPage = () => {
         url={'/companies/company'}
         RenderComponent={CompanyCard}
         idKey={'company_id'} />
-      <Modal isOpen={isShow} onClose={handleCloseModal}>
-        <h2>Add company</h2>
-
-        <Formik
-          initialValues={{
-            company_name: '',
-            is_visible: true,
-            company_description: '',
-          }}
-          onSubmit={handleCreateCompany}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-            <Form>
-              <TextField
-                id="outlined-required"
-                label="Name"
-                variant="outlined"
-                name="company_name"
-                value={values.company_name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                margin="normal"
-                fullWidth
-                error={touched.company_name && !!errors.company_name}
-              />
-              <ErrorMessage name="company_name" component="p" />
-              <TextField
-                id="outlined-multiline-flexible"
-                label="Description"
-                name="company_description"
-                value={values.company_description}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                margin="normal"
-                fullWidth
-                multiline
-                maxRows={4}
-                error={touched.company_description && !!errors.company_description}
-              />
-              <ErrorMessage name="company_description" component="p" />
-
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <StyleButton text={'Create'} type={'submit'} />
-                </Grid>
-                <Grid item xs={6}>
-                  <StyleButton onClick={handleCloseModal} text={'Close'} />
-                </Grid>
-              </Grid>
-            </Form>
-          )}
-        </Formik>
-      </Modal>
     </>
   );
 };

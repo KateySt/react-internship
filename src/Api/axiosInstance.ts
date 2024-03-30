@@ -10,6 +10,8 @@ import { CompanyProfile } from 'Types/CompanyProfile';
 import { UpdateCompany } from 'Types/UpdateCompany';
 import { UserInvited } from 'Types/UserInvited';
 import { CompanyInvited } from 'Types/CompanyInvited';
+import { QuizzesInfo } from 'Types/QuizzesInfo';
+import { NewQuiz } from '../Types/NewQuiz';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -82,6 +84,7 @@ const companies = {
   updateAvatar: (data: FormData, id: number) => request.put<Response<string>>(`/company/${id}/update_avatar`, data),
   listRequests: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/requests_list`),
   listMembers: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/members_list`),
+  listQuizzes: (id: number) => request.get<Response<{ quizzes: QuizzesInfo[] }>>(`/company/${id}/quizzes_list`),
 };
 
 const users = {
@@ -117,11 +120,23 @@ const actions = {
   removeAdmin: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/remove_from_admin`),
 };
 
+const quizzes = {
+  createQuiz: (body: NewQuiz) => request.post<Response<{ quiz_id: number }>>('/quiz', body),
+  updateQuiz: (id: number,
+               body: {
+                 quiz_name: string,
+                 quiz_title: string,
+                 quiz_description: string,
+                 quiz_frequency: number
+               }) => request.put<Response<{ quiz_id: number }>>(`/quiz/${id}/update_info`, body),
+};
+
 const api = {
   test,
   companies,
   users,
   actions,
+  quizzes,
 };
 
 export default api;

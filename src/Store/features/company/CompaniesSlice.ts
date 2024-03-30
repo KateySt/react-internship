@@ -6,11 +6,13 @@ import { CompanyProfile } from 'Types/CompanyProfile';
 import { Company } from 'Types/Company';
 import { UpdateCompany } from 'Types/UpdateCompany';
 import { UserInvited } from 'Types/UserInvited';
+import { QuizzesInfo } from 'Types/QuizzesInfo';
 
 export interface CompanyState {
   companies: CompanyList;
   company: CompanyProfile | null;
   members: UserInvited[];
+  quizzes: QuizzesInfo[];
 }
 
 const initialState: CompanyState = {
@@ -24,6 +26,7 @@ const initialState: CompanyState = {
   },
   company: null,
   members: [],
+  quizzes: [],
 };
 
 export const CompaniesSlice = createSlice({
@@ -56,10 +59,14 @@ export const CompaniesSlice = createSlice({
     deleteMembers: (state, action: PayloadAction<number>) => {
       state.members = state.members.filter(member => member.action_id !== action.payload);
     },
+    setQuizzes: (state, action: PayloadAction<QuizzesInfo[]>) => {
+      state.quizzes = action.payload;
+    },
   },
 });
 
 export const {
+  setQuizzes,
   setCompanies,
   setMembers,
   deleteCompany,
@@ -75,6 +82,8 @@ export const selectCompanies = (state: RootState) => state.companies.companies;
 export const selectCompany = (state: RootState) => state.companies.company;
 
 export const selectMembers = (state: RootState) => state.companies.members;
+
+export const selectQuizzes = (state: RootState) => state.companies.quizzes;
 
 export const getListCompanyAsync = (param: object) => async (dispatch: AppDispatch) => {
   await api.companies.list(param).then(el => dispatch(setCompanies(el.result)));
@@ -120,7 +129,11 @@ export const deleteCompanyAsync = (id: number) => async (dispatch: AppDispatch) 
 };
 
 export const getListMembersAsync = (id: number) => async (dispatch: AppDispatch) => {
-  await api.companies.listMembers(id).then(el => dispatch(setMembers(el.result.users)));
+  await api.companies.listMembers(id).then(el => dispatch(setMembers(el.result.users))).catch(() => dispatch(setMembers([])));
+};
+
+export const getListQuizzesAsync = (id: number) => async (dispatch: AppDispatch) => {
+  await api.companies.listQuizzes(id).then(el => dispatch(setQuizzes(el.result.quizzes))).catch(() => dispatch(setQuizzes([])));
 };
 
 export default CompaniesSlice.reducer;

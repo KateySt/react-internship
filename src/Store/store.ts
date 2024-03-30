@@ -3,6 +3,7 @@ import usersReducer from './features/user/UsersSlice';
 import uiReducer from './features/ui/uiSlice';
 import companiesReducer from './features/company/CompaniesSlice';
 import actionsReducer from './features/action/ActionSlice';
+import quizReducer from './features/quiz/QuizSliece';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     ui: uiReducer,
     companies: companiesReducer,
     actions: actionsReducer,
+    quiz: quizReducer,
   },
 });
 

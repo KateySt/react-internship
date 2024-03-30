@@ -5,41 +5,25 @@ import {
   deleteCompanyAsync,
   getCompanyAsync,
   getListMembersAsync,
+  getListQuizzesAsync,
   selectCompany,
   selectMembers,
   setNewAvatarAsync,
   updateInfoCompanyAsync,
 } from 'Store/features/company/CompaniesSlice';
-import {
-  Avatar,
-  Chip,
-  Grid,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Avatar, Grid, Typography } from '@mui/material';
 import { IoIosArrowBack } from 'react-icons/io';
 import StyleButton from 'Components/button/StyleButton';
 import { getListUsersAsync, selectUser, selectUsers } from 'Store/features/user/UsersSlice';
 import PhotoUpload from 'Components/updatePhoto/PhotoUpload';
 import { UpdateCompany } from 'Types/UpdateCompany';
 import CompanyEditForm from 'Components/company/CompanyEditForm';
-import { FcInvite } from 'react-icons/fc';
 import {
   acceptRequestAsync,
-  addAdminAsync,
   createActionFromCompanyAsync,
   declineActionAsync,
   getListInvitedUsersAsync,
   getListRequestsUsersAsync,
-  leaveCompanyAsync,
-  removeAdminAsync,
   selectInvitedUser,
   selectRequestsUser,
 } from 'Store/features/action/ActionSlice';
@@ -47,20 +31,17 @@ import SendRequest from 'Components/action/SendRequest';
 import { FaThList } from 'react-icons/fa';
 import Action from 'Components/action/Action';
 import { FaCodePullRequest } from 'react-icons/fa6';
-import { UserInvited } from 'Types/UserInvited';
 import { SelectChangeEvent } from '@mui/material/Select';
-import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { MdDeleteForever } from 'react-icons/md';
+import { RiMailSendFill } from 'react-icons/ri';
+import CompanyTabs from 'Components/tabItem/CompanyTabs';
 
-const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
 const CompanyPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const company = useAppSelector(selectCompany);
-  const members = useAppSelector(selectMembers);
   const user = useAppSelector(selectUser);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [photoData, setPhotoData] = useState<File | null>(null);
@@ -72,15 +53,7 @@ const CompanyPage = () => {
   const invitedUsers = useAppSelector(selectInvitedUser);
   const [param, setParam] = useState<{ page: number, page_size: number }>({ page: 1, page_size: 10 });
   const userRequests = useAppSelector(selectRequestsUser);
-
-  const handleChangeSwitch = async (event: React.ChangeEvent<HTMLInputElement>, actionId: number) => {
-    if (event.target.checked) {
-      await dispatch(addAdminAsync(actionId));
-    } else {
-      await dispatch(removeAdminAsync(actionId));
-    }
-    dispatch(getListMembersAsync(Number(id)));
-  };
+  const members = useAppSelector(selectMembers);
 
   useEffect(() => {
     dispatch(getListUsersAsync(param));
@@ -95,11 +68,12 @@ const CompanyPage = () => {
   }, [users]);
 
   useEffect(() => {
-    if (company && user.user_id === company.company_owner.user_id) {
-      dispatch(getListInvitedUsersAsync(company.company_id));
-      dispatch(getListRequestsUsersAsync(company.company_id));
-      dispatch(getListMembersAsync(company.company_id));
-    }
+    if (!company) return;
+    dispatch(getListMembersAsync(company.company_id));
+    dispatch(getListQuizzesAsync(company.company_id));
+    if (user.user_id !== company.company_owner.user_id) return;
+    dispatch(getListInvitedUsersAsync(company.company_id));
+    dispatch(getListRequestsUsersAsync(company.company_id));
   }, [company]);
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -143,14 +117,6 @@ const CompanyPage = () => {
     dispatch(getCompanyAsync(Number(id)));
   }, [id]);
 
-  const handleDelete = async () => {
-    if (!company) return;
-    if (window.confirm('Are you sure you want to delete this company?')) {
-      await dispatch(deleteCompanyAsync(company.company_id));
-      navigate('/companies');
-    }
-  };
-
   const handleBlockRequest = async (id: number) => {
     await dispatch(declineActionAsync(id));
   };
@@ -173,10 +139,11 @@ const CompanyPage = () => {
     await dispatch(getCompanyAsync(Number(id)));
   };
 
-  const handleDeleteUser = async (actionId: number) => {
-    if (company && user.user_id !== company.company_owner.user_id) return;
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      await dispatch(leaveCompanyAsync(actionId));
+  const handleDelete = async () => {
+    if (!company) return;
+    if (window.confirm('Are you sure you want to delete this company?')) {
+      await dispatch(deleteCompanyAsync(company.company_id));
+      navigate('/companies');
     }
   };
 
@@ -194,7 +161,7 @@ const CompanyPage = () => {
                     <MdDeleteForever onClick={handleDelete} size={34} />
                   </Grid>
                   <Grid item xs={2}>
-                    <FcInvite onClick={() => setIsShowSendInvite(!isShowSendInvite)} size={36} />
+                    <RiMailSendFill onClick={() => setIsShowSendInvite(!isShowSendInvite)} size={34} />
                   </Grid>
                   <Grid item xs={2}>
                     <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={30} />
@@ -232,63 +199,11 @@ const CompanyPage = () => {
                     )}
                   </Grid>
                 </Grid>
-                {user.user_id === company.company_owner.user_id &&
-                  members &&
-                  (<TableContainer component={Paper}>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>User First Name</TableCell>
-                            <TableCell>User Last Name</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell>Change role</TableCell>
-                            <TableCell>Delete</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {members.map((member: UserInvited, index: number) => (
-                            <TableRow key={index}>
-                              <TableCell>{member.user_firstname}</TableCell>
-                              <TableCell>{member.user_lastname}</TableCell>
-                              <TableCell>
-                                <Chip
-                                  label={member.action}
-                                  variant="outlined"
-                                  style={{
-                                    color: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
-                                    borderColor: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                {user.user_id !== member.user_id && (
-                                  <Switch
-                                    {...label}
-                                    checked={member.action === 'admin'}
-                                    color="secondary"
-                                    onChange={(e) => handleChangeSwitch(e, member.action_id)}
-                                  />
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                {user.user_id !== member.user_id && (
-                                  <IconButton
-                                    onClick={() => {
-                                      if (user.user_id !== member.user_id) {
-                                        handleDeleteUser(member.action_id);
-                                      }
-                                    }}
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  )}
+
+                {members &&
+                  members.some(el => el.user_id === user.user_id) &&
+                  <CompanyTabs />}
+
                 <SendRequest
                   handleCloseModal={handleCloseModal}
                   isShow={isShowSendInvite}
