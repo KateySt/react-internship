@@ -10,22 +10,36 @@ import {
   setNewAvatarAsync,
   updateInfoCompanyAsync,
 } from 'Store/features/company/CompaniesSlice';
-import { Avatar, Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
+import {
+  Avatar,
+  Chip,
+  Grid,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { IoIosArrowBack } from 'react-icons/io';
 import StyleButton from 'Components/button/StyleButton';
 import { getListUsersAsync, selectUser, selectUsers } from 'Store/features/user/UsersSlice';
 import PhotoUpload from 'Components/updatePhoto/PhotoUpload';
 import { UpdateCompany } from 'Types/UpdateCompany';
-import { MdDeleteForever } from 'react-icons/md';
 import CompanyEditForm from 'Components/company/CompanyEditForm';
 import { FcInvite } from 'react-icons/fc';
 import {
   acceptRequestAsync,
+  addAdminAsync,
   createActionFromCompanyAsync,
   declineActionAsync,
   getListInvitedUsersAsync,
   getListRequestsUsersAsync,
   leaveCompanyAsync,
+  removeAdminAsync,
   selectInvitedUser,
   selectRequestsUser,
 } from 'Store/features/action/ActionSlice';
@@ -33,8 +47,13 @@ import SendRequest from 'Components/action/SendRequest';
 import { FaThList } from 'react-icons/fa';
 import Action from 'Components/action/Action';
 import { FaCodePullRequest } from 'react-icons/fa6';
-import { UserInvited } from '../../../Types/UserInvited';
+import { UserInvited } from 'Types/UserInvited';
 import { SelectChangeEvent } from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { MdDeleteForever } from 'react-icons/md';
+
+const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
 const CompanyPage = () => {
   const { id } = useParams();
@@ -53,6 +72,15 @@ const CompanyPage = () => {
   const invitedUsers = useAppSelector(selectInvitedUser);
   const [param, setParam] = useState<{ page: number, page_size: number }>({ page: 1, page_size: 10 });
   const userRequests = useAppSelector(selectRequestsUser);
+
+  const handleChangeSwitch = async (event: React.ChangeEvent<HTMLInputElement>, actionId: number) => {
+    if (event.target.checked) {
+      await dispatch(addAdminAsync(actionId));
+    } else {
+      await dispatch(removeAdminAsync(actionId));
+    }
+    dispatch(getListMembersAsync(Number(id)));
+  };
 
   useEffect(() => {
     dispatch(getListUsersAsync(param));
@@ -161,10 +189,20 @@ const CompanyPage = () => {
             {user.user_id === company.company_owner.user_id &&
               <>
                 <StyleButton text={isEdit ? 'Exit edit mode' : 'Edit'} onClick={() => setIsEdit(!isEdit)} />
-                <MdDeleteForever onClick={handleDelete} size={34} />
-                <FcInvite onClick={() => setIsShowSendInvite(!isShowSendInvite)} size={36} />
-                <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
-                <FaCodePullRequest onClick={() => setIsShowListRequests(!isShowListRequests)} size={32} />
+                <Grid container spacing={2} justifyContent="space-between" margin="unset">
+                  <Grid item xs={2}>
+                    <MdDeleteForever onClick={handleDelete} size={34} />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FcInvite onClick={() => setIsShowSendInvite(!isShowSendInvite)} size={36} />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FaCodePullRequest onClick={() => setIsShowListRequests(!isShowListRequests)} size={32} />
+                  </Grid>
+                </Grid>
               </>}
             {isEdit ?
               <>
@@ -173,43 +211,83 @@ const CompanyPage = () => {
               </>
               :
               <>
-                <Typography variant="h4" gutterBottom>
-                  {company.company_name}
-                </Typography>
-                <Grid container spacing={3} alignItems="center">
+                <Grid container spacing={3}>
                   <Grid item>
-                    <Avatar sx={{ width: 120, height: 120, margin: 'auto' }}
-                            alt={company.company_name} src={company.company_avatar} />
+                    <Avatar
+                      sx={{ width: 120, height: 120 }}
+                      alt={company.company_name}
+                      src={company.company_avatar}
+                    />
                   </Grid>
-                  <Grid item>
-                    <Typography variant="body1">{company.company_title}</Typography>
-                    <Typography variant="body2">{company.company_city}</Typography>
+                  <Grid item xs>
+                    <Typography variant="h4" gutterBottom>
+                      {company.company_name}
+                    </Typography>
+                    <Typography variant="body1">{company.company_description}</Typography>
+                    <Typography variant="body2">Phone: {company.company_phone}</Typography>
+                    {user.user_id !== company.company_owner.user_id && (
+                      <Typography variant="body2">
+                        Owner: {`${company.company_owner.user_firstname} ${company.company_owner.user_lastname}`}
+                      </Typography>
+                    )}
                   </Grid>
                 </Grid>
-                <Typography variant="body1">{company.company_description}</Typography>
-                <Typography variant="body2">Phone: {company.company_phone}</Typography>
-                {company.company_owner && (
-                  <Typography variant="body2">
-                    Owner: {`${company.company_owner.user_firstname} ${company.company_owner.user_lastname}`}
-                  </Typography>
-                )}
                 {user.user_id === company.company_owner.user_id &&
-                  members && (<Typography variant="body1" color="textSecondary">
-                      members:
-                      <List>
-                        {members.map((member: UserInvited, index: number) => (
-                          <ListItem key={index}>
-                            <ListItemText primary={member.user_firstname} />
-                            <ListItemText primary={member.user_lastname} />
-                            <ListItemText primary={user.user_id !== member.user_id && 'Delete'} onClick={() => {
-                              if (user.user_id !== member.user_id) {
-                                handleDeleteUser(member.action_id);
-                              }
-                            }} />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Typography>
+                  members &&
+                  (<TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>User First Name</TableCell>
+                            <TableCell>User Last Name</TableCell>
+                            <TableCell>Role</TableCell>
+                            <TableCell>Change role</TableCell>
+                            <TableCell>Delete</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {members.map((member: UserInvited, index: number) => (
+                            <TableRow key={index}>
+                              <TableCell>{member.user_firstname}</TableCell>
+                              <TableCell>{member.user_lastname}</TableCell>
+                              <TableCell>
+                                <Chip
+                                  label={member.action}
+                                  variant="outlined"
+                                  style={{
+                                    color: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
+                                    borderColor: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                {user.user_id !== member.user_id && (
+                                  <Switch
+                                    {...label}
+                                    checked={member.action === 'admin'}
+                                    color="secondary"
+                                    onChange={(e) => handleChangeSwitch(e, member.action_id)}
+                                  />
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {user.user_id !== member.user_id && (
+                                  <IconButton
+                                    onClick={() => {
+                                      if (user.user_id !== member.user_id) {
+                                        handleDeleteUser(member.action_id);
+                                      }
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
                   )}
                 <SendRequest
                   handleCloseModal={handleCloseModal}

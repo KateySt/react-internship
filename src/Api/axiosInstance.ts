@@ -113,6 +113,8 @@ const actions = {
   acceptInvite: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/accept_invite`),
   acceptRequest: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/accept_request`),
   leaveCompany: (id: number) => request.get<Response<string>>(`/action/${id}/leave_company`),
+  addAdmin: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/add_to_admin`),
+  removeAdmin: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/remove_from_admin`),
 };
 
 const api = {

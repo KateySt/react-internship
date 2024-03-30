@@ -114,4 +114,12 @@ export const leaveCompanyAsync = (id: number) => async (dispatch: AppDispatch) =
   });
 };
 
+export const addAdminAsync = (id: number) => async () => {
+  await api.actions.addAdmin(id);
+};
+
+export const removeAdminAsync = (id: number) => async () => {
+  await api.actions.removeAdmin(id);
+};
+
 export default ActionSlice.reducer;
