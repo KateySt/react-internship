@@ -127,9 +127,11 @@ const UserPage = () => {
   }, [id]);
 
   useEffect(() => {
-    dispatch(getListCompaniesAsync(Number(id)));
-    dispatch(getListInvitedCompanyAsync(Number(id)));
-    dispatch(getListRequestsCompaniesAsync(Number(id)));
+    if (currentUser && user.user_id === currentUser.user_id) {
+      dispatch(getListCompaniesAsync(Number(id)));
+      dispatch(getListInvitedCompanyAsync(Number(id)));
+      dispatch(getListRequestsCompaniesAsync(Number(id)));
+    }
   }, [companyId]);
 
   const handleAcceptInviteAction = async (actionId: number) => {
@@ -150,10 +152,20 @@ const UserPage = () => {
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
           {user.user_id === currentUser.user_id && <>
-            <MdDeleteForever onClick={handleDelete} size={36} />
-            <FcInvite onClick={() => setIsShow(!isShow)} size={36} />
-            <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
-            <FaCodePullRequest onClick={() => setIsShowListRequests(!isShowListRequests)} size={32} />
+            <Grid container spacing={2} justifyContent="space-between">
+              <Grid item xs={2}>
+                <MdDeleteForever onClick={handleDelete} size={36} />
+              </Grid>
+              <Grid item xs={2}>
+                <FcInvite onClick={() => setIsShow(!isShow)} size={36} />
+              </Grid>
+              <Grid item xs={2}>
+                <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
+              </Grid>
+              <Grid item xs={2}>
+                <FaCodePullRequest onClick={() => setIsShowListRequests(!isShowListRequests)} size={32} />
+              </Grid>
+            </Grid>
           </>}
           <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
             {isEdit ?
