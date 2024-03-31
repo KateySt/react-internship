@@ -1,19 +1,14 @@
 import {
   Box,
   Chip,
-  FormControl,
-  FormControlLabel,
   Grid,
   IconButton,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
-  Radio,
-  RadioGroup,
-  Slider,
   SpeedDial,
   SpeedDialIcon,
-  Stack,
   Tab,
   Table,
   TableBody,
@@ -24,6 +19,7 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import React, { useEffect, useState } from 'react';
 import CustomTabPanel from './CustomTabPanel';
 import { UserInvited } from 'Types/UserInvited';
@@ -40,25 +36,20 @@ import {
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { selectUser } from 'Store/features/user/UsersSlice';
 import { QuizzesInfo } from 'Types/QuizzesInfo';
-import Modal from '../modal';
-import TextField from '@mui/material/TextField';
-import StyleButton from '../button/StyleButton';
-import { NewQuiz } from '../../Types/NewQuiz';
-import { createQuizAsync } from '../../Store/features/quiz/QuizSliece';
-import { Question } from '../../Types/Question';
-
-const MAX = 365;
-const MIN = 1;
-const marks = [
-  {
-    value: MIN,
-    label: '',
-  },
-  {
-    value: MAX,
-    label: '',
-  },
-];
+import { NewQuiz } from 'Types/NewQuiz';
+import {
+  addQuestionAsync,
+  createQuizAsync,
+  deleteQuestionAsync,
+  deleteQuizAsync,
+  getQuizAsync,
+  selectQuiz,
+  setQuizInfo,
+  updateQuestionAsync,
+  updateQuizAsync,
+} from 'Store/features/quiz/QuizSliece';
+import ModalQuiz from '../quize/ModalQuiz';
+import UseTextDebounce from 'Utils/useTextDebounce';
 
 function a11yProps(index: number) {
   return {
@@ -78,23 +69,25 @@ const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
 const initialQuestion = {
   question_text: '',
-  question_answers: [''],
+  question_answers: ['', ''],
   question_correct_answer: 0,
 };
 const CompanyTabs = () => {
   const [value, setValue] = useState<number>(0);
   const dispatch = useAppDispatch();
+  const quizInfo = useAppSelector(selectQuiz);
   const company = useAppSelector(selectCompany);
   const members = useAppSelector(selectMembers);
   const user = useAppSelector(selectUser);
   const quizzes = useAppSelector(selectQuizzes);
   const [open, setOpen] = useState<boolean>(false);
-  const [description, setDescription] = useState<string>('');
   const [isCreateButtonActive, setIsCreateButtonActive] = useState(true);
+  const [isUpdateButtonActive, setIsUpdateButtonActive] = useState(true);
   const [quiz, setQuiz] = useState<NewQuiz>({
     quiz_name: '',
-    quiz_frequency: MIN,
+    quiz_frequency: 1,
     company_id: company?.company_id ?? 0,
+    quiz_description: '',
     questions_list: [{
       ...initialQuestion,
       question_answers: [...initialQuestion.question_answers],
@@ -103,6 +96,104 @@ const CompanyTabs = () => {
       question_answers: [...initialQuestion.question_answers],
     }],
   });
+  const [isShow, setIsShow] = useState<boolean>(false);
+
+  const handleUpdateQuiz = async () => {
+    if (!quizInfo) return;
+    await dispatch(updateQuizAsync(quizInfo.quiz_id, {
+      quiz_name: quizInfo.quiz_name,
+      quiz_title: quizInfo.quiz_title,
+      quiz_description: quizInfo.quiz_description,
+      quiz_frequency: quizInfo.quiz_frequency,
+    }));
+    setIsShow(false);
+  };
+
+  const handleQuestionTextUpdate = async (index: number, newText: string) => {
+    if (!quizInfo) return;
+    const debouncedText = UseTextDebounce(newText);
+    const updatedQuestion = {
+      ...quizInfo.questions_list[index],
+      question_text: debouncedText,
+    };
+    await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
+  };
+
+  const handleUpdateDeleteQuestion = async (index: number) => {
+    if (!quizInfo) return;
+    await dispatch(deleteQuestionAsync(quizInfo.questions_list.filter((_, i) => i === index)[0].question_id));
+  };
+
+  const handleUpdateQuestionCorrectAnswer = async (questionCorrectAnswer: number, questionIndex: number) => {
+    if (!quizInfo) return;
+    const updatedQuestion = {
+      ...quizInfo.questions_list[questionIndex],
+      question_correct_answer: questionCorrectAnswer,
+    };
+    await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));//todo
+  };
+
+  const handleAnswerTextUpdate = async (index: number, answerIndex: number, newText: string) => {
+    if (!quizInfo) return;
+    const debouncedText = UseTextDebounce(newText);
+    const updatedQuestion = {
+      ...quizInfo.questions_list[index],
+    };
+    updatedQuestion.question_answers = [...updatedQuestion.question_answers];
+    updatedQuestion.question_answers[answerIndex] = debouncedText;
+    await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
+  };
+
+  const handleEnterKeyPressUpdate = (event: React.KeyboardEvent<HTMLDivElement>, index: number, answerIndex: number) => {
+    if (!quizInfo) return;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (answerIndex === quizInfo.questions_list[index].question_answers.length - 1) {
+        handleUpdateAddAnswer(index);
+      }
+    }
+  };
+
+  const handleUpdateAddAnswer = (index: number) => {
+    if (!quizInfo) return;
+    const updatedQuestionsList = [...quizInfo.questions_list];
+    updatedQuestionsList[index] = {
+      ...updatedQuestionsList[index],
+      question_correct_answer: 0,
+      question_answers: [...updatedQuestionsList[index].question_answers, ''],
+    };
+    dispatch(setQuizInfo({ ...quizInfo, questions_list: updatedQuestionsList }));
+  };
+
+  const handleUpdateDeleteAnswer = async (index: number, answerIndex: number) => {
+    if (!quizInfo) return;
+    const updatedAnswersList = quizInfo.questions_list[index].question_answers.filter((_, i) => i !== answerIndex);
+    const updatedQuestionsList = [...quizInfo.questions_list];
+    updatedQuestionsList[index] = {
+      ...updatedQuestionsList[index],
+      question_correct_answer: 0,
+      question_answers: updatedAnswersList,
+    };
+    await dispatch(updateQuestionAsync(updatedQuestionsList[index].question_id, updatedQuestionsList[index]));
+  };
+
+  const handleUpdateAddQuestion = async (id: number) => {
+    await dispatch(addQuestionAsync(id, {
+      ...initialQuestion,
+      question_answers: [...initialQuestion.question_answers],
+    }));
+  };
+
+  useEffect(() => {
+    if (!quizInfo) return;
+    setIsUpdateButtonActive(
+      quizInfo.quiz_name.trim() === '' ||
+      quizInfo.questions_list.length < 2 ||
+      quizInfo.questions_list.some(question => question.question_text.trim() === ''
+        || question.question_answers.length < 2
+        || question.question_answers.some(answer => answer.trim() === '')),
+    );
+  }, [quizInfo]);
 
   const handleChangeQuestionCorrectAnswer = (questionCorrectAnswer: number, questionIndex: number) => {
     const newQuestions = [...quiz.questions_list];
@@ -157,6 +248,11 @@ const CompanyTabs = () => {
     setQuiz({ ...quiz, questions_list: newQuestions });
   };
 
+  const handleFullInfoQuiz = async (id: number) => {
+    await dispatch(getQuizAsync(id));
+    setIsShow(true);
+  };
+
   useEffect(() => {
     setIsCreateButtonActive(
       quiz.quiz_name.trim() === '' ||
@@ -167,16 +263,16 @@ const CompanyTabs = () => {
     );
   }, [quiz]);
 
-
   const handleCreateQuiz = async () => {
     if (!company) return;
-    await dispatch(createQuizAsync(quiz, description));
+    await dispatch(createQuizAsync(quiz));
     await dispatch(getListQuizzesAsync(company.company_id));
     handleClose();
     setQuiz({
       quiz_name: '',
-      quiz_frequency: MIN,
+      quiz_frequency: 1,
       company_id: company?.company_id ?? 0,
+      quiz_description: '',
       questions_list: [{
         ...initialQuestion,
         question_answers: [...initialQuestion.question_answers],
@@ -185,17 +281,16 @@ const CompanyTabs = () => {
         question_answers: [...initialQuestion.question_answers],
       }],
     });
-    setDescription('');
   };
 
-  const handleChangeCounter = (_: Event, newValue: number | number[]) => {
-    setQuiz({ ...quiz, quiz_frequency: newValue as number });
-  };
   const handleOpen = () => setOpen(true);
+
   const handleClose = () => setOpen(false);
+
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
 
   const handleDeleteUser = async (actionId: number) => {
     if (company && user.user_id !== company.company_owner.user_id) return;
@@ -284,17 +379,18 @@ const CompanyTabs = () => {
           )}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        {!open &&
+        {(!open && !isShow) &&
           members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) &&
           <SpeedDial
             ariaLabel="SpeedDial tooltip"
-            sx={{ position: 'absolute', right: 16, height: 32, width: 32 }}
+            sx={{ position: 'absolute', right: 16, height: 34}}
             icon={<SpeedDialIcon />}
             onClose={handleClose}
             onOpen={handleOpen}
             open={open}
             FabProps={{
               sx: {
+                width: 34,
                 bgcolor: 'secondary.main',
                 '&:hover': {
                   bgcolor: 'secondary.main',
@@ -303,145 +399,40 @@ const CompanyTabs = () => {
             }}
           />
         }
-        <Modal
-          isOpen={open}
-          onClose={handleClose}
-          aria-labelledby="create-quiz-modal-title"
-          aria-describedby="create-quiz-modal-description"
-        >
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            borderRadius: '2%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            width: 600,
-            maxHeight: '80vh',
-            overflowY: 'auto',
-          }}>
-            <Typography variant="h5" id="create-quiz-modal-title" textAlign="center">Create a quiz</Typography>
 
-            <Grid container spacing={2} alignItems="flex-start">
-              <Grid item xs={6}>
-                <Typography variant="h6">Quiz Information</Typography>
-                <TextField
-                  margin="normal"
-                  helperText="Please enter your quiz name"
-                  id="quiz-name"
-                  label="Name"
-                  fullWidth
-                  value={quiz.quiz_name}
-                  onChange={(e) => setQuiz({ ...quiz, quiz_name: e.target.value })}
-                />
+        <ModalQuiz
+          open={open}
+          handleClose={handleClose}
+          quiz={quiz}
+          setQuiz={setQuiz}
+          handleActionQuiz={handleCreateQuiz}
+          handleQuestionTextChange={handleQuestionTextChange}
+          handleDeleteQuestion={handleDeleteQuestion}
+          handleChangeQuestionCorrectAnswer={handleChangeQuestionCorrectAnswer}
+          handleAnswerTextChange={handleAnswerTextChange}
+          handleEnterKeyPress={handleEnterKeyPress}
+          handleDeleteAnswer={handleDeleteAnswer}
+          handleAddQuestion={handleAddQuestion}
+          isCreateButtonActive={isCreateButtonActive}
+        />
 
-                <Box mt={2}>
-                  <Typography>Frequency (days)</Typography>
-                  <Slider
-                    marks={marks}
-                    step={10}
-                    value={quiz.quiz_frequency}
-                    valueLabelDisplay="auto"
-                    min={MIN}
-                    max={MAX}
-                    onChange={handleChangeCounter}
-                    color="secondary"
-                  />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography
-                      variant="body2"
-                      onClick={() => setQuiz({ ...quiz, quiz_frequency: MIN })}
-                      sx={{ cursor: 'pointer' }}
-                    >
-                      {MIN} min
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      onClick={() => setQuiz({ ...quiz, quiz_frequency: MAX })}
-                      sx={{ cursor: 'pointer' }}
-                    >
-                      {MAX} max
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <TextField
-                  margin="normal"
-                  id="outlined-multiline-static"
-                  label="Multiline"
-                  multiline
-                  helperText="Please enter your quiz description"
-                  rows={4}
-                  fullWidth
-                  defaultValue="Default Value"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <Box>
-                  <Typography variant="h6">Questions</Typography>
-                  {quiz.questions_list.map((question: Question, index: number) => (
-                    <Box key={index} sx={{ mb: 2 }}>
-                      <Stack direction="row" alignItems="center">
-                        <TextField
-                          label="Question text"
-                          fullWidth
-                          value={question.question_text}
-                          margin="normal"
-                          onChange={(e) => handleQuestionTextChange(index, e.target.value)}
-                        />
-                        {quiz.questions_list.length > 2 && (
-                          <IconButton onClick={() => handleDeleteQuestion(index)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        )}
-                      </Stack>
-                      {question.question_answers.map((answer: string, answerIndex: number) => (
-                        <FormControl>
-                          <RadioGroup
-                            aria-labelledby="demo-controlled-radio-buttons-group"
-                            name="controlled-radio-buttons-group"
-                            value={question.question_correct_answer}
-                            onChange={(e) => handleChangeQuestionCorrectAnswer(Number(e.target.value), index)}
-                          >
-                            <Stack key={answerIndex} direction="row" alignItems="center">
-                              <FormControlLabel value={answerIndex} control={<Radio color="secondary" />} label="a" />
-                              <TextField
-                                label={`Answer ${answerIndex + 1}`}
-                                fullWidth
-                                margin="normal"
-                                value={answer}
-                                onChange={(e) => handleAnswerTextChange(index, answerIndex, e.target.value)}
-                                onKeyDown={(e) => handleEnterKeyPress(e, index, answerIndex)}
-                              />
-                              {question.question_answers.length > 2 && (
-                                <IconButton onClick={() => handleDeleteAnswer(index, answerIndex)}>
-                                  <DeleteIcon />
-                                </IconButton>
-                              )}
-                            </Stack>
-                          </RadioGroup>
-                        </FormControl>
-                      ))}
-                    </Box>
-                  ))}
-                  <IconButton onClick={handleAddQuestion}>
-                    +
-                  </IconButton>
-                </Box>
-              </Grid>
-            </Grid>
-
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', '& > *': { marginLeft: '10px' } }}>
-              <StyleButton onClick={handleCreateQuiz} text={'Create'} disabled={isCreateButtonActive} />
-              <StyleButton onClick={handleClose} text={'Close'} />
-            </Box>
-          </Box>
-        </Modal>
+        {quizInfo &&
+          <ModalQuiz
+            open={isShow}
+            handleClose={() => setIsShow(false)}
+            quiz={quizInfo}
+            setQuiz={(e: any) => dispatch(setQuizInfo(e))}
+            handleActionQuiz={handleUpdateQuiz}
+            handleQuestionTextChange={handleQuestionTextUpdate}
+            handleDeleteQuestion={handleUpdateDeleteQuestion}
+            handleChangeQuestionCorrectAnswer={handleUpdateQuestionCorrectAnswer}
+            handleAnswerTextChange={handleAnswerTextUpdate}
+            handleEnterKeyPress={handleEnterKeyPressUpdate}
+            handleDeleteAnswer={handleUpdateDeleteAnswer}
+            handleAddQuestion={handleUpdateAddQuestion}
+            isCreateButtonActive={isUpdateButtonActive}
+          />
+        }
 
         <Grid item xs={12} md={6}>
           <Typography variant="h5" textAlign="center">Available quizzes</Typography>
@@ -449,14 +440,21 @@ const CompanyTabs = () => {
             {quizzes &&
               quizzes.map((quiz: QuizzesInfo, index: number) => (
                 <ListItem key={index}
-                          secondaryAction={
+                          secondaryAction={members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) ? (
                             <IconButton edge="end" aria-label="delete">
-                              <DeleteIcon />
+                              <DeleteIcon onClick={async () => await dispatch(deleteQuizAsync(quiz.quiz_id))} />
                             </IconButton>
-                          }
-                >
+                          ) : null}>
+
                   <ListItemText
-                    primary={truncateText(quiz.quiz_name, 10)}
+                    primary={
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {truncateText(quiz.quiz_name, 10)}
+                        {members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) && (
+                          <EditIcon fontSize="small" onClick={() => handleFullInfoQuiz(quiz.quiz_id)} />
+                        )}
+                      </div>
+                    }
                   />
                   <ListItemText
                     primary={truncateText(quiz.quiz_title ?? '', 10)}
@@ -470,7 +468,8 @@ const CompanyTabs = () => {
         </Grid>
       </CustomTabPanel>
     </Box>
-  );
+  )
+    ;
 };
 
 export default CompanyTabs;

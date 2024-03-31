@@ -12,6 +12,8 @@ import { UserInvited } from 'Types/UserInvited';
 import { CompanyInvited } from 'Types/CompanyInvited';
 import { QuizzesInfo } from 'Types/QuizzesInfo';
 import { NewQuiz } from '../Types/NewQuiz';
+import { Quiz } from '../Types/Quiz';
+import { Question } from '../Types/Question';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -122,6 +124,15 @@ const actions = {
 
 const quizzes = {
   createQuiz: (body: NewQuiz) => request.post<Response<{ quiz_id: number }>>('/quiz', body),
+  details: (id: number) => request.get<Response<Quiz>>(`/quiz/${id}`),
+  addQuestion: (id: number, body: Question) => request.post<Response<{
+    question_id: number
+  }>>(`/quiz/${id}/add_question`, body),
+  updateQuestion: (id: number, body: Question) => request.put<Response<{
+    question_id: number
+  }>>(`/question/${id}/update_info`, body),
+  deleteQuestion: (id: number) => request.delete<Response<string>>(`/question/${id}`),
+  delete: (id: number) => request.delete<Response<string>>(`/quiz/${id}`),
   updateQuiz: (id: number,
                body: {
                  quiz_name: string,
