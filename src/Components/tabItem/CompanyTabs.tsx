@@ -5,7 +5,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListItemText,
   SpeedDial,
   SpeedDialIcon,
@@ -383,7 +382,7 @@ const CompanyTabs = () => {
           members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) &&
           <SpeedDial
             ariaLabel="SpeedDial tooltip"
-            sx={{ position: 'absolute', right: 16, height: 34}}
+            sx={{ position: 'absolute', right: 16, height: 34 }}
             icon={<SpeedDialIcon />}
             onClose={handleClose}
             onOpen={handleOpen}
