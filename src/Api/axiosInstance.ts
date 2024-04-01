@@ -4,10 +4,12 @@ import { User } from 'Types/User';
 import { UserList } from 'Types/UserList';
 import { NewUser } from 'Types/NewUser';
 import { Response } from 'Types/Response';
-import { UpdateUserInfo } from '../Types/UpdateUserInfo';
-import { CompanyList } from '../Types/CompanyList';
-import { CompanyProfile } from '../Types/CompanyProfile';
-import { UpdateCompany } from '../Types/UpdateCompany';
+import { UpdateUserInfo } from 'Types/UpdateUserInfo';
+import { CompanyList } from 'Types/CompanyList';
+import { CompanyProfile } from 'Types/CompanyProfile';
+import { UpdateCompany } from 'Types/UpdateCompany';
+import { UserInvited } from 'Types/UserInvited';
+import { CompanyInvited } from 'Types/CompanyInvited';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -78,6 +80,8 @@ const companies = {
   updateInfo: (data: UpdateCompany, id: number) =>
     request.put<Response<{ company_id: number }>>(`/company/${id}/update_info`, data),
   updateAvatar: (data: FormData, id: number) => request.put<Response<string>>(`/company/${id}/update_avatar`, data),
+  listRequests: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/requests_list`),
+  listMembers: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/members_list`),
 };
 
 const users = {
@@ -92,12 +96,30 @@ const users = {
   updatePassword: (data: { user_password: string, user_password_repeat: string }, id: number) =>
     request.put<Response<{ user_id: number }>>(`/user/${id}/update_password`, data),
   delete: (id: number) => request.delete<Response<string>>(`/user/${id}`),
+  listCompanies: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/companies_list`),
+  listRequests: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/requests_list`),
+};
+
+const actions = {
+  declineAction: (id: number) => request.get<Response<null>>(`/action/${id}/decline_action`),
+  createActionFromCompany: (companyId: number, userId: number) => request.get<Response<{
+    action_id: number
+  }>>(`/action/create_from_company/${companyId}/user/${userId}`),
+  createActionFromUser: (id: number) => request.get<Response<{
+    action_id: number
+  }>>(`/action/create_from_user/company/${id}`),
+  companyListInvites: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/invites_list`),
+  userListInvites: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/invites_list`),
+  acceptInvite: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/accept_invite`),
+  acceptRequest: (id: number) => request.get<Response<{ action_id: number }>>(`/action/${id}/accept_request`),
+  leaveCompany: (id: number) => request.get<Response<string>>(`/action/${id}/leave_company`),
 };
 
 const api = {
   test,
   companies,
   users,
+  actions,
 };
 
 export default api;
