@@ -36,8 +36,6 @@ import { MdDeleteForever } from 'react-icons/md';
 import { RiMailSendFill } from 'react-icons/ri';
 import CompanyTabs from 'Components/tabItem/CompanyTabs';
 
-import TableCompanyMember from '../../../Components/tableCompanyMember/TableCompanyMember';
-
 const CompanyPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();

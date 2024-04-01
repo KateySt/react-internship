@@ -1,6 +1,5 @@
 import {
   Box,
-  Chip,
   Grid,
   IconButton,
   List,
@@ -9,20 +8,12 @@ import {
   SpeedDial,
   SpeedDialIcon,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tabs,
   Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import React, { useEffect, useState } from 'react';
 import CustomTabPanel from './CustomTabPanel';
-import { UserInvited } from 'Types/UserInvited';
-import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { addAdminAsync, leaveCompanyAsync, removeAdminAsync } from 'Store/features/action/ActionSlice';
 import {
@@ -49,6 +40,7 @@ import {
 } from 'Store/features/quiz/QuizSliece';
 import ModalQuiz from '../quize/ModalQuiz';
 import UseTextDebounce from 'Utils/useTextDebounce';
+import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember';
 
 function a11yProps(index: number) {
   return {
@@ -321,60 +313,11 @@ const CompanyTabs = () => {
       </Box>
       <CustomTabPanel value={value} index={0}>
         {members &&
-          (<TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>User First Name</TableCell>
-                    <TableCell>User Last Name</TableCell>
-                    <TableCell>Role</TableCell>
-                    <TableCell>Change role</TableCell>
-                    <TableCell>Delete</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {members.map((member: UserInvited, index: number) => (
-                    <TableRow key={index}>
-                      <TableCell>{truncateText(member.user_firstname, 10)}</TableCell>
-                      <TableCell>{truncateText(member.user_lastname, 10)}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={member.action}
-                          variant="outlined"
-                          style={{
-                            color: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
-                            borderColor: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {user.user_id !== member.user_id && (
-                          <Switch
-                            {...label}
-                            checked={member.action === 'admin'}
-                            color="secondary"
-                            onChange={(e) => handleChangeSwitch(e, member.action_id)}
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {user.user_id !== member.user_id && (
-                          <IconButton
-                            onClick={() => {
-                              if (user.user_id !== member.user_id) {
-                                handleDeleteUser(member.action_id);
-                              }
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+          (<TableCompanyMember
+              members={members}
+              user={user}
+              handleChangeSwitch={handleChangeSwitch}
+              handleDeleteUser={handleDeleteUser} />
           )}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
