@@ -1,0 +1,90 @@
+import React from 'react';
+import {
+  Chip,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+import { UserInvited } from 'Types/UserInvited';
+import Switch from '@mui/material/Switch';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { User } from 'Types/User';
+
+const label = { inputProps: { 'aria-label': 'Color switch demo' } };
+const TableCompanyMember: React.FC<{
+  members: UserInvited[],
+  user: User,
+  handleChangeSwitch: (event: React.ChangeEvent<HTMLInputElement>, id: number) => void,
+  handleDeleteUser: (id: number) => void
+}> = ({
+        members,
+        user,
+        handleChangeSwitch,
+        handleDeleteUser,
+      }) => {
+  return (
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>User First Name</TableCell>
+              <TableCell>User Last Name</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>Change role</TableCell>
+              <TableCell>Delete</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {members.map((member: UserInvited, index: number) => (
+              <TableRow key={index}>
+                <TableCell>{member.user_firstname}</TableCell>
+                <TableCell>{member.user_lastname}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={member.action}
+                    variant="outlined"
+                    style={{
+                      color: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
+                      borderColor: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  {user.user_id !== member.user_id && (
+                    <Switch
+                      {...label}
+                      checked={member.action === 'admin'}
+                      color="secondary"
+                      onChange={(e) => handleChangeSwitch(e, member.action_id)}
+                    />
+                  )}
+                </TableCell>
+                <TableCell>
+                  {user.user_id !== member.user_id && (
+                    <IconButton
+                      onClick={() => {
+                        if (user.user_id !== member.user_id) {
+                          handleDeleteUser(member.action_id);
+                        }
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
+  );
+};
+
+export default TableCompanyMember;

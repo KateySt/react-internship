@@ -10,20 +10,7 @@ import {
   setNewAvatarAsync,
   updateInfoCompanyAsync,
 } from 'Store/features/company/CompaniesSlice';
-import {
-  Avatar,
-  Chip,
-  Grid,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Avatar, Grid, Typography } from '@mui/material';
 import { IoIosArrowBack } from 'react-icons/io';
 import StyleButton from 'Components/button/StyleButton';
 import { getListUsersAsync, selectUser, selectUsers } from 'Store/features/user/UsersSlice';
@@ -47,13 +34,9 @@ import SendRequest from 'Components/action/SendRequest';
 import { FaThList } from 'react-icons/fa';
 import Action from 'Components/action/Action';
 import { FaCodePullRequest } from 'react-icons/fa6';
-import { UserInvited } from 'Types/UserInvited';
 import { SelectChangeEvent } from '@mui/material/Select';
-import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { MdDeleteForever } from 'react-icons/md';
-
-const label = { inputProps: { 'aria-label': 'Color switch demo' } };
+import TableCompanyMember from '../../../Components/tableCompanyMember/TableCompanyMember';
 
 const CompanyPage = () => {
   const { id } = useParams();
@@ -234,60 +217,12 @@ const CompanyPage = () => {
                 </Grid>
                 {user.user_id === company.company_owner.user_id &&
                   members &&
-                  (<TableContainer component={Paper}>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>User First Name</TableCell>
-                            <TableCell>User Last Name</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell>Change role</TableCell>
-                            <TableCell>Delete</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {members.map((member: UserInvited, index: number) => (
-                            <TableRow key={index}>
-                              <TableCell>{member.user_firstname}</TableCell>
-                              <TableCell>{member.user_lastname}</TableCell>
-                              <TableCell>
-                                <Chip
-                                  label={member.action}
-                                  variant="outlined"
-                                  style={{
-                                    color: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
-                                    borderColor: member.action === 'admin' ? 'red' : member.action === 'member' ? 'green' : 'gold',
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                {user.user_id !== member.user_id && (
-                                  <Switch
-                                    {...label}
-                                    checked={member.action === 'admin'}
-                                    color="secondary"
-                                    onChange={(e) => handleChangeSwitch(e, member.action_id)}
-                                  />
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                {user.user_id !== member.user_id && (
-                                  <IconButton
-                                    onClick={() => {
-                                      if (user.user_id !== member.user_id) {
-                                        handleDeleteUser(member.action_id);
-                                      }
-                                    }}
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                  (
+                    <TableCompanyMember
+                      members={members}
+                      user={user}
+                      handleChangeSwitch={handleChangeSwitch}
+                      handleDeleteUser={handleDeleteUser} />
                   )}
                 <SendRequest
                   handleCloseModal={handleCloseModal}
