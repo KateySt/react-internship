@@ -41,6 +41,7 @@ import {
 import ModalQuiz from '../quize/ModalQuiz';
 import UseTextDebounce from 'Utils/useTextDebounce';
 import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember';
+import { Quiz } from '../../Types/Quiz';
 
 function a11yProps(index: number) {
   return {
@@ -64,7 +65,7 @@ const initialQuestion = {
   question_correct_answer: 0,
 };
 const CompanyTabs = () => {
-  const [value, setValue] = useState<number>(0);
+
   const dispatch = useAppDispatch();
   const quizInfo = useAppSelector(selectQuiz);
   const company = useAppSelector(selectCompany);
@@ -75,6 +76,7 @@ const CompanyTabs = () => {
   const [isCreateButtonActive, setIsCreateButtonActive] = useState(true);
   const [isUpdateButtonActive, setIsUpdateButtonActive] = useState(true);
   const [loading, setLoading] = useState<boolean>(false);
+  const [value, setValue] = useState<number>(0);
   const [quiz, setQuiz] = useState<NewQuiz>({
     quiz_name: '',
     quiz_frequency: 1,
@@ -122,7 +124,7 @@ const CompanyTabs = () => {
       ...quizInfo.questions_list[questionIndex],
       question_correct_answer: questionCorrectAnswer,
     };
-    await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));//todo
+    await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
   };
 
   const handleAnswerTextUpdate = async (index: number, answerIndex: number, newText: string) => {
@@ -309,30 +311,29 @@ const CompanyTabs = () => {
       setLoading(false);
     }
   };
-  console.log(quizzes);
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} textColor="secondary"
               indicatorColor="secondary"
               aria-label="secondary tabs example">
-          {company && user.user_id === company.company_owner.user_id &&
-            <Tab label="Members" {...a11yProps(0)} />}
+          <Tab label="Members" {...a11yProps(0)} />
           <Tab label="Quizzes" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      {members && members.some(
-          el => el.user_id === user.user_id && el.action === 'member') &&
-        (<CustomTabPanel value={value} index={0}>
-          <TableCompanyMember
-            members={members}
-            user={user}
-            handleChangeSwitch={handleChangeSwitch}
-            handleDeleteUser={handleDeleteUser} />
-        </CustomTabPanel>)}
+      <CustomTabPanel value={value} index={0}>
+        {members &&
+          (<TableCompanyMember
+              members={members}
+              user={user}
+              handleChangeSwitch={handleChangeSwitch}
+              handleDeleteUser={handleDeleteUser} />
+          )}
+      </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         {(!open && !isShow) &&
-          members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) &&
+          members.some(m => m.user_id === user.user_id && m.action !== 'member') &&
           <SpeedDial
             ariaLabel="SpeedDial tooltip"
             sx={{ position: 'absolute', right: 16, height: 34 }}
@@ -373,7 +374,7 @@ const CompanyTabs = () => {
             open={isShow}
             handleClose={() => setIsShow(false)}
             quiz={quizInfo}
-            setQuiz={(e: any) => dispatch(setQuizInfo(e))}
+            setQuiz={(e: Quiz) => dispatch(setQuizInfo(e))}
             handleActionQuiz={handleUpdateQuiz}
             handleQuestionTextChange={handleQuestionTextUpdate}
             handleDeleteQuestion={handleUpdateDeleteQuestion}

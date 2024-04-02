@@ -16,6 +16,8 @@ import TextField from '@mui/material/TextField';
 import { Question } from 'Types/Question';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StyleButton from '../button/StyleButton';
+import { Quiz } from 'Types/Quiz';
+import { NewQuiz } from 'Types/NewQuiz';
 
 const MAX = 365;
 const MIN = 1;
@@ -29,21 +31,35 @@ const marks = [
     label: '',
   },
 ];
-const ModalQuiz: React.FC<any> = ({
-                                    open,
-                                    handleClose,
-                                    quiz,
-                                    setQuiz,
-                                    handleActionQuiz,
-                                    handleQuestionTextChange,
-                                    handleDeleteQuestion,
-                                    handleChangeQuestionCorrectAnswer,
-                                    handleAnswerTextChange,
-                                    handleEnterKeyPress,
-                                    handleDeleteAnswer,
-                                    handleAddQuestion,
-                                    isCreateButtonActive,
-                                  }) => {
+const ModalQuiz: React.FC<{
+  open: boolean,
+  handleClose: () => void,
+  quiz: Quiz | NewQuiz,
+  setQuiz: (e: any) => void,
+  handleActionQuiz: () => void,
+  handleQuestionTextChange: (index: number, newText: string) => void,
+  handleDeleteQuestion: (index: number) => void,
+  handleChangeQuestionCorrectAnswer: (questionCorrectAnswer: number, questionIndex: number) => void,
+  handleAnswerTextChange: (index: number, answerIndex: number, newText: string) => void,
+  handleEnterKeyPress: (event: React.KeyboardEvent<HTMLDivElement>, index: number, answerIndex: number) => void,
+  handleDeleteAnswer: (index: number, answerIndex: number) => void,
+  handleAddQuestion: (index: number) => void,
+  isCreateButtonActive: boolean
+}> = ({
+        open,
+        handleClose,
+        quiz,
+        setQuiz,
+        handleActionQuiz,
+        handleQuestionTextChange,
+        handleDeleteQuestion,
+        handleChangeQuestionCorrectAnswer,
+        handleAnswerTextChange,
+        handleEnterKeyPress,
+        handleDeleteAnswer,
+        handleAddQuestion,
+        isCreateButtonActive,
+      }) => {
   return (
     <Modal
       isOpen={open}
@@ -174,7 +190,11 @@ const ModalQuiz: React.FC<any> = ({
                   ))}
                 </Box>
               ))}
-              <IconButton onClick={()=>handleAddQuestion(quiz.quiz_id)}>
+              <IconButton onClick={() => {
+                if ('quiz_id' in quiz) {
+                  handleAddQuestion(quiz.quiz_id);
+                }
+              }}>
                 +
               </IconButton>
             </Box>
