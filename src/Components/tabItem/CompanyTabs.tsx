@@ -309,7 +309,7 @@ const CompanyTabs = () => {
       setLoading(false);
     }
   };
-
+  console.log(quizzes);
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -321,15 +321,15 @@ const CompanyTabs = () => {
           <Tab label="Quizzes" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        {members &&
-          (<TableCompanyMember
-              members={members}
-              user={user}
-              handleChangeSwitch={handleChangeSwitch}
-              handleDeleteUser={handleDeleteUser} />
-          )}
-      </CustomTabPanel>
+      {members && members.some(
+          el => el.user_id === user.user_id && el.action === 'member') &&
+        (<CustomTabPanel value={value} index={0}>
+          <TableCompanyMember
+            members={members}
+            user={user}
+            handleChangeSwitch={handleChangeSwitch}
+            handleDeleteUser={handleDeleteUser} />
+        </CustomTabPanel>)}
       <CustomTabPanel value={value} index={1}>
         {(!open && !isShow) &&
           members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) &&
@@ -420,8 +420,7 @@ const CompanyTabs = () => {
         </Grid>
       </CustomTabPanel>
     </Box>
-  )
-    ;
+  );
 };
 
 export default CompanyTabs;

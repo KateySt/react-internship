@@ -11,9 +11,9 @@ import { UpdateCompany } from 'Types/UpdateCompany';
 import { UserInvited } from 'Types/UserInvited';
 import { CompanyInvited } from 'Types/CompanyInvited';
 import { QuizzesInfo } from 'Types/QuizzesInfo';
-import { NewQuiz } from '../Types/NewQuiz';
-import { Quiz } from '../Types/Quiz';
-import { Question } from '../Types/Question';
+import { NewQuiz } from 'Types/NewQuiz';
+import { Quiz } from 'Types/Quiz';
+import { Question } from 'Types/Question';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
