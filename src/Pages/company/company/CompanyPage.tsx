@@ -36,7 +36,7 @@ import Action from 'Components/action/Action';
 import { FaCodePullRequest } from 'react-icons/fa6';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { MdDeleteForever } from 'react-icons/md';
-import TableCompanyMember from '../../../Components/tableCompanyMember/TableCompanyMember';
+import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember';
 
 const CompanyPage = () => {
   const { id } = useParams();
@@ -55,14 +55,23 @@ const CompanyPage = () => {
   const invitedUsers = useAppSelector(selectInvitedUser);
   const [param, setParam] = useState<{ page: number, page_size: number }>({ page: 1, page_size: 10 });
   const userRequests = useAppSelector(selectRequestsUser);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const handleChangeSwitch = async (event: React.ChangeEvent<HTMLInputElement>, actionId: number) => {
-    if (event.target.checked) {
-      await dispatch(addAdminAsync(actionId));
-    } else {
-      await dispatch(removeAdminAsync(actionId));
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      if (event.target.checked) {
+        await dispatch(addAdminAsync(actionId));
+      } else {
+        await dispatch(removeAdminAsync(actionId));
+      }
+      await dispatch(getListMembersAsync(Number(id)));
+    } catch (error) {
+      console.error('Error occurred:', error);
+    } finally {
+      setLoading(false);
     }
-    dispatch(getListMembersAsync(Number(id)));
   };
 
   useEffect(() => {
