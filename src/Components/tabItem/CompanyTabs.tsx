@@ -74,6 +74,7 @@ const CompanyTabs = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [isCreateButtonActive, setIsCreateButtonActive] = useState(true);
   const [isUpdateButtonActive, setIsUpdateButtonActive] = useState(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [quiz, setQuiz] = useState<NewQuiz>({
     quiz_name: '',
     quiz_frequency: 1,
@@ -291,13 +292,22 @@ const CompanyTabs = () => {
   };
 
   const handleChangeSwitch = async (event: React.ChangeEvent<HTMLInputElement>, actionId: number) => {
-    if (event.target.checked) {
-      await dispatch(addAdminAsync(actionId));
-    } else {
-      await dispatch(removeAdminAsync(actionId));
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      if (event.target.checked) {
+        await dispatch(addAdminAsync(actionId));
+      } else {
+        await dispatch(removeAdminAsync(actionId));
+      }
+      if (!company) return;
+      await dispatch(getListMembersAsync(company.company_id));
+    } catch (error) {
+      console.error('Error occurred:', error);
+    } finally {
+      setLoading(false);
     }
-    if (!company) return;
-    dispatch(getListMembersAsync(company.company_id));
   };
 
   return (

@@ -53,24 +53,6 @@ const CompanyPage = () => {
   const [param, setParam] = useState<{ page: number, page_size: number }>({ page: 1, page_size: 10 });
   const userRequests = useAppSelector(selectRequestsUser);
   const members = useAppSelector(selectMembers);
-  const [loading, setLoading] = useState<boolean>(false);
-  const handleChangeSwitch = async (event: React.ChangeEvent<HTMLInputElement>, actionId: number) => {
-    if (loading) return;
-    setLoading(true);
-
-    try {
-      if (event.target.checked) {
-        await dispatch(addAdminAsync(actionId));
-      } else {
-        await dispatch(removeAdminAsync(actionId));
-      }
-      await dispatch(getListMembersAsync(Number(id)));
-    } catch (error) {
-      console.error('Error occurred:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     dispatch(getListUsersAsync(param));
