@@ -53,7 +53,7 @@ const TableCompanyMember: React.FC<{
                 {(member.action === 'owner' || member.action === 'admin') &&
                   <>
                     <TableCell>
-                      {(user.user_id !== member.user_id) && (
+                      {(user.user_id !== member.user_id && member.action !== 'owner') && (
                         <Switch
                           {...label}
                           checked={member.action === 'admin'}
@@ -63,7 +63,7 @@ const TableCompanyMember: React.FC<{
                       )}
                     </TableCell>
                     <TableCell>
-                      {user.user_id !== member.user_id && (
+                      {user.user_id !== member.user_id && member.action !== 'owner' && (
                         <IconButton
                           onClick={() => {
                             if (user.user_id !== member.user_id) {
@@ -82,8 +82,7 @@ const TableCompanyMember: React.FC<{
         </Table>
       </TableContainer>
     </>
-  )
-    ;
+  );
 };
 
 export default TableCompanyMember;
