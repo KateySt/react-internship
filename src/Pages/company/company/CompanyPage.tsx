@@ -11,7 +11,7 @@ import {
   setNewAvatarAsync,
   updateInfoCompanyAsync,
 } from 'Store/features/company/CompaniesSlice';
-import { Avatar, Grid, Typography } from '@mui/material';
+import { Alert, Avatar, Grid, Typography } from '@mui/material';
 import { IoIosArrowBack } from 'react-icons/io';
 import StyleButton from 'Components/button/StyleButton';
 import { getListUsersAsync, selectUser, selectUsers } from 'Store/features/user/UsersSlice';
@@ -35,6 +35,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import { MdDeleteForever } from 'react-icons/md';
 import { RiMailSendFill } from 'react-icons/ri';
 import CompanyTabs from 'Components/tabItem/CompanyTabs';
+import { selectResult, setResultInfo } from '../../../Store/features/quiz/QuizSliece';
 
 const CompanyPage = () => {
   const { id } = useParams();
@@ -53,6 +54,18 @@ const CompanyPage = () => {
   const [param, setParam] = useState<{ page: number, page_size: number }>({ page: 1, page_size: 10 });
   const userRequests = useAppSelector(selectRequestsUser);
   const members = useAppSelector(selectMembers);
+  const [showAlert, setShowAlert] = useState(false);
+  const result = useAppSelector(selectResult);
+
+  useEffect(() => {
+    if (result) {
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        dispatch(setResultInfo(null));
+      }, 10000);
+    }
+  }, [result]);
 
   useEffect(() => {
     dispatch(getListUsersAsync(param));
@@ -148,6 +161,19 @@ const CompanyPage = () => {
 
   return (
     <>
+      {showAlert && result && (
+        <Alert severity="success" sx={{
+          position: 'fixed',
+          zIndex: 9999,
+          button: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'rgba(0,255,0,0.18)',
+        }}
+               onClose={() => setShowAlert(false)}>
+          This is your success {result.result_score}.
+        </Alert>
+      )}
       {company && (
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />

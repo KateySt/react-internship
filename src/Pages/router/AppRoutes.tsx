@@ -8,6 +8,7 @@ import AboutPage from '../about';
 import Users from '../user/moduls/Users';
 import Companies from '../company/moduls/Companies';
 import NotFoundPage from '../error';
+import QuizPage from '../quiz/QuizPage';
 
 const AppRoutes: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -37,7 +38,11 @@ const AppRoutes: React.FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/users/*" element={<Users />} />
-        {token && <Route path="/companies/*" element={<Companies />} />}
+        {token &&
+          <>
+            <Route path="/companies/*" element={<Companies />} />
+            <Route path="/quiz/:id" element={<QuizPage />} />
+          </>}
         <Route path="*" element={<Navigate to="/not-found" replace />} />
         <Route path="/not-found" element={<NotFoundPage />} />
       </Routes>

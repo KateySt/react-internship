@@ -140,6 +140,10 @@ const quizzes = {
                  quiz_description: string,
                  quiz_frequency: number
                }) => request.put<Response<{ quiz_id: number }>>(`/quiz/${id}/update_info`, body),
+  takQuiz: (id: number, body: { answers: { [key: string]: string } }) => request.post<Response<{
+    result_id: number,
+    result_score: number
+  }>>(`/quiz/${id}/take_quiz`, body),
 };
 
 const api = {
