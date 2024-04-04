@@ -8,10 +8,15 @@ import { Question } from 'Types/Question';
 
 export interface QuizState {
   quiz: Quiz | null;
+  result: {
+    result_id: number,
+    result_score: number
+  } | null;
 }
 
 const initialState: QuizState = {
   quiz: null,
+  result: null,
 };
 export const QuizSlice = createSlice({
   name: 'Quiz',
@@ -19,6 +24,12 @@ export const QuizSlice = createSlice({
   reducers: {
     setQuizInfo: (state, action: PayloadAction<Quiz>) => {
       state.quiz = action.payload;
+    },
+    setResultInfo: (state, action: PayloadAction<{
+      result_id: number,
+      result_score: number
+    } | null>) => {
+      state.result = action.payload;
     },
     addQuestion: (state, action: PayloadAction<{
       question_id: number;
@@ -53,9 +64,10 @@ export const QuizSlice = createSlice({
   },
 });
 
-export const { setQuizInfo, updateQuestion, deleteQuestion, addQuestion } = QuizSlice.actions;
+export const { setQuizInfo, setResultInfo, updateQuestion, deleteQuestion, addQuestion } = QuizSlice.actions;
 
 export const selectQuiz = (state: RootState) => state.quiz.quiz;
+export const selectResult = (state: RootState) => state.quiz.result;
 
 export const createQuizAsync = (data: NewQuiz) => async () => {
   await api.quizzes.createQuiz(data)
@@ -70,7 +82,7 @@ export const createQuizAsync = (data: NewQuiz) => async () => {
 };
 
 export const getQuizAsync = (id: number) => async (dispatch: AppDispatch) => {
-  await api.quizzes.details(id) .then(el => {
+  await api.quizzes.details(id).then(el => {
     const quizInfo = el.result;
     const questionsWithDefaultAnswer = quizInfo.questions_list.map(question => ({
       ...question,
@@ -107,4 +119,11 @@ export const addQuestionAsync = (id: number, body: Question) => async (dispatch:
 export const deleteQuizAsync = (id: number) => async () => {
   await api.quizzes.delete(id);
 };
+
+export const takeQuizAsync = (id: number, body: {
+  answers: { [key: string]: string }
+}) => async (dispatch: AppDispatch) => {
+  await api.quizzes.takQuiz(id, body).then(el => dispatch(setResultInfo(el.result)));
+};
+
 export default QuizSlice.reducer;
