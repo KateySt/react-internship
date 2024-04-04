@@ -191,9 +191,7 @@ const ModalQuiz: React.FC<{
                 </Box>
               ))}
               <IconButton onClick={() => {
-                if ('quiz_id' in quiz) {
-                  handleAddQuestion(quiz.quiz_id);
-                }
+                handleAddQuestion(('quiz_id' in quiz) ? quiz.quiz_id : 0);
               }}>
                 +
               </IconButton>

@@ -50,7 +50,7 @@ const TableCompanyMember: React.FC<{
                     }}
                   />
                 </TableCell>
-                {(member.action === 'owner' || member.action === 'admin') &&
+                {currentMember && (currentMember.action === 'owner' || currentMember.action === 'admin') &&
                   <>
                     <TableCell>
                       {(user.user_id !== member.user_id && member.action !== 'owner') && (
