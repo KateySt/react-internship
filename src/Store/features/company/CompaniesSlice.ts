@@ -7,17 +7,12 @@ import { Company } from 'Types/Company';
 import { UpdateCompany } from 'Types/UpdateCompany';
 import { UserInvited } from 'Types/UserInvited';
 import { QuizzesInfo } from 'Types/QuizzesInfo';
-import { RatingAnalytic } from 'Types/RatingAnalytic';
-import { LastPass } from 'Types/LastPass';
 
 export interface CompanyState {
   companies: CompanyList;
   company: CompanyProfile | null;
   members: UserInvited[];
   quizzes: QuizzesInfo[];
-  ratingQuiz: RatingAnalytic | null;
-  lastPass: LastPass[];
-  ratingStar: { rating: number, quiz_id: number }[];
 }
 
 const initialState: CompanyState = {
@@ -32,9 +27,6 @@ const initialState: CompanyState = {
   company: null,
   members: [],
   quizzes: [],
-  ratingQuiz: null,
-  lastPass: [],
-  ratingStar: [],
 };
 
 export const CompaniesSlice = createSlice({
@@ -70,20 +62,10 @@ export const CompaniesSlice = createSlice({
     setQuizzes: (state, action: PayloadAction<QuizzesInfo[]>) => {
       state.quizzes = action.payload;
     },
-    setRatingQuiz: (state, action: PayloadAction<RatingAnalytic>) => {
-      state.ratingQuiz = action.payload;
-    },
-    setLastPass: (state, action: PayloadAction<LastPass[]>) => {
-      state.lastPass = action.payload;
-    },
-    setRatingUsers: (state, action: PayloadAction<{ rating: number, quiz_id: number }[]>) => {
-      state.ratingStar = action.payload;
-    },
   },
 });
 
 export const {
-  setRatingUsers,
   setQuizzes,
   setCompanies,
   setMembers,
@@ -93,16 +75,10 @@ export const {
   addCompany,
   setCompany,
   deleteMembers,
-  setRatingQuiz,
-  setLastPass,
 } = CompaniesSlice.actions;
 
 export const selectCompanies = (state: RootState) => state.companies.companies;
 
-export const selectRatingQuiz = (state: RootState) => state.companies.ratingQuiz;
-
-export const selectRatingUser = (state: RootState) => state.companies.ratingStar;
-export const selectLastPass = (state: RootState) => state.companies.lastPass;
 export const selectCompany = (state: RootState) => state.companies.company;
 
 export const selectMembers = (state: RootState) => state.companies.members;
@@ -158,22 +134,6 @@ export const getListMembersAsync = (id: number) => async (dispatch: AppDispatch)
 
 export const getListQuizzesAsync = (id: number) => async (dispatch: AppDispatch) => {
   await api.companies.listQuizzes(id).then(el => dispatch(setQuizzes(el.result.quizzes))).catch(() => dispatch(setQuizzes([])));
-};
-
-export const getListRatingQuizAsync = (companyId: number, quizId: number) => async (dispatch: AppDispatch) => {
-  await api.companies.listRatingAnalyticQuiz(companyId, quizId).then(el => dispatch(setRatingQuiz(el.result)));
-};
-
-export const getListRatingUserAsync = (companyId: number, userId: number) => async (dispatch: AppDispatch) => {
-  await api.companies.listRatingAnalyticUser(companyId, userId).then(el => dispatch(setRatingQuiz(el.result)));
-};
-
-export const getListLastPassUserAsync = (companyId: number) => async (dispatch: AppDispatch) => {
-  await api.companies.listLastPassQuiz(companyId).then(el => dispatch(setLastPass(el.result.users)));
-};
-
-export const getListRatingStarUserAsync = (companyId: number, userId: number) => async (dispatch: AppDispatch) => {
-  await api.companies.listRatingUser(companyId,userId).then(el => dispatch(setRatingUsers(el.result.rating)));
 };
 
 export default CompaniesSlice.reducer;
