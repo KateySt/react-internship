@@ -41,6 +41,8 @@ import {
 import ModalQuiz from '../quize/ModalQuiz';
 import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember';
 import { Quiz } from 'Types/Quiz';
+import { MdQuiz } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 function a11yProps(index: number) {
   return {
@@ -62,6 +64,7 @@ const initialQuestion = {
   question_correct_answer: 0,
 };
 const CompanyTabs = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const quizInfo = useAppSelector(selectQuiz);
   const company = useAppSelector(selectCompany);
@@ -395,12 +398,18 @@ const CompanyTabs = () => {
             {quizzes &&
               quizzes.map((quiz: QuizzesInfo, index: number) => (
                 <ListItem key={index}
-                          secondaryAction={members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) ? (
-                            <IconButton edge="end" aria-label="delete">
-                              <DeleteIcon onClick={async () => await dispatch(deleteQuizAsync(quiz.quiz_id))} />
-                            </IconButton>
-                          ) : null}>
-
+                          secondaryAction={
+                            <>
+                              {members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) ? (
+                                <IconButton edge="end" aria-label="delete">
+                                  <DeleteIcon onClick={async () => await dispatch(deleteQuizAsync(quiz.quiz_id))} />
+                                </IconButton>
+                              ) : null}
+                              <IconButton>
+                                <MdQuiz onClick={() => navigate(`/quiz/${quiz.quiz_id}`)} />
+                              </IconButton>
+                            </>
+                          }>
                   <ListItemText
                     primary={
                       <div style={{ display: 'flex', alignItems: 'center' }}>
