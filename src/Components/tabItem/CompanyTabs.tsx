@@ -41,8 +41,6 @@ import {
 import ModalQuiz from '../quize/ModalQuiz';
 import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember';
 import { Quiz } from 'Types/Quiz';
-import { MdQuiz } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
 
 function a11yProps(index: number) {
   return {
@@ -58,15 +56,12 @@ const truncateText = (text: string, maxLength: number) => {
   return text;
 };
 
-const label = { inputProps: { 'aria-label': 'Color switch demo' } };
-
 const initialQuestion = {
   question_text: '',
   question_answers: ['', ''],
   question_correct_answer: 0,
 };
 const CompanyTabs = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const quizInfo = useAppSelector(selectQuiz);
   const company = useAppSelector(selectCompany);
@@ -110,12 +105,15 @@ const CompanyTabs = () => {
       ...quizInfo.questions_list[index],
       question_text: newText,
     };
+    if (updatedQuestion.question_id === undefined) return;
     await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
   };
 
   const handleUpdateDeleteQuestion = async (index: number) => {
     if (!quizInfo) return;
-    await dispatch(deleteQuestionAsync(quizInfo.questions_list.filter((_, i) => i === index)[0].question_id));
+    let question = quizInfo.questions_list.filter((_, i) => i === index)[0];
+    if (question.question_id === undefined) return;
+    await dispatch(deleteQuestionAsync(question.question_id));
   };
 
   const handleUpdateQuestionCorrectAnswer = async (questionCorrectAnswer: number, questionIndex: number) => {
@@ -124,6 +122,7 @@ const CompanyTabs = () => {
       ...quizInfo.questions_list[questionIndex],
       question_correct_answer: questionCorrectAnswer,
     };
+    if (updatedQuestion.question_id === undefined) return;
     await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
   };
 
@@ -134,6 +133,7 @@ const CompanyTabs = () => {
     };
     updatedQuestion.question_answers = [...updatedQuestion.question_answers];
     updatedQuestion.question_answers[answerIndex] = newText;
+    if (updatedQuestion.question_id === undefined) return;
     await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
   };
 
@@ -167,7 +167,10 @@ const CompanyTabs = () => {
       question_correct_answer: 0,
       question_answers: updatedAnswersList,
     };
-    await dispatch(updateQuestionAsync(updatedQuestionsList[index].question_id, updatedQuestionsList[index]));
+    const updatedQuestion = updatedQuestionsList[index];
+
+    if (updatedQuestion.question_id === undefined) return;
+    await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
   };
 
   const handleUpdateAddQuestion = async (id: number) => {
@@ -392,18 +395,11 @@ const CompanyTabs = () => {
             {quizzes &&
               quizzes.map((quiz: QuizzesInfo, index: number) => (
                 <ListItem key={index}
-                          secondaryAction={
-                            <>
-                              {members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) ? (
-                                <IconButton edge="end" aria-label="delete">
-                                  <DeleteIcon onClick={async () => await dispatch(deleteQuizAsync(quiz.quiz_id))} />
-                                </IconButton>
-                              ) : null}
-                              <IconButton>
-                                <MdQuiz onClick={() => navigate(`/quiz/${quiz.quiz_id}`)} />
-                              </IconButton>
-                            </>
-                          }>
+                          secondaryAction={members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) ? (
+                            <IconButton edge="end" aria-label="delete">
+                              <DeleteIcon onClick={async () => await dispatch(deleteQuizAsync(quiz.quiz_id))} />
+                            </IconButton>
+                          ) : null}>
 
                   <ListItemText
                     primary={
