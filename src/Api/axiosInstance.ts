@@ -16,6 +16,7 @@ import { Quiz } from 'Types/Quiz';
 import { Question } from 'Types/Question';
 import { RatingAnalytic } from 'Types/RatingAnalytic';
 import { LastPass } from 'Types/LastPass';
+import { RatingData } from '../Types/RatingData';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -111,6 +112,15 @@ const users = {
   delete: (id: number) => request.delete<Response<string>>(`/user/${id}`),
   listCompanies: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/companies_list`),
   listRequests: (id: number) => request.get<Response<{ companies: CompanyInvited[] }>>(`/user/${id}/requests_list`),
+  listRatingAnalyticUser: (userId: number, quizId: number) => request.get<Response<{
+    rating: RatingData[]
+  }>>(`/user/${userId}/rating_analytic_for_quiz/${quizId}`),
+  listLastPassQuiz: (userId: number) => request.get<Response<{
+    quizzes: {
+      quiz_id: number;
+      last_quiz_pass_at: Date;
+    } []
+  }>>(`/user/${userId}/quizzes_last_pass`),
 };
 
 const actions = {

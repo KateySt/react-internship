@@ -16,6 +16,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import React, { useEffect, useState } from 'react';
 import CustomTabPanel from './CustomTabPanel';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { IoBarChartOutline } from 'react-icons/io5';
 import { addAdminAsync, leaveCompanyAsync, removeAdminAsync } from 'Store/features/action/ActionSlice';
 import {
   getListMembersAsync,
@@ -29,7 +30,13 @@ import {
   selectRatingUser,
 } from 'Store/features/company/CompaniesSlice';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
-import { selectUser } from 'Store/features/user/UsersSlice';
+import {
+  getLastPassUserAsync,
+  getRatingAnalyticUserAsync,
+  selectLastPass,
+  selectRating,
+  selectUser,
+} from 'Store/features/user/UsersSlice';
 import { QuizzesInfo } from 'Types/QuizzesInfo';
 import { NewQuiz } from 'Types/NewQuiz';
 import {
@@ -79,10 +86,13 @@ const CompanyTabs = () => {
   const ratingUsers = useAppSelector(selectRatingUser);
   const company = useAppSelector(selectCompany);
   const ratingQuiz = useAppSelector(selectRatingQuiz);
+  const lastPass = useAppSelector(selectLastPass);
+  const rating = useAppSelector(selectRating);
   const members = useAppSelector(selectMembers);
   const user = useAppSelector(selectUser);
   const quizzes = useAppSelector(selectQuizzes);
   const [isChart, setIsChart] = useState<boolean>(false);
+  const [isUserChart, setIsUserChart] = useState<boolean>(false);
   const [isCreateButtonActive, setIsCreateButtonActive] = useState(true);
   const [isUpdateButtonActive, setIsUpdateButtonActive] = useState(true);
   const [loading, setLoading] = useState<boolean>(false);
@@ -343,6 +353,16 @@ const CompanyTabs = () => {
     }
   }, [company]);
 
+  const handleChartUser = async (userId: number, quizId: number) => {
+    await dispatch(getRatingAnalyticUserAsync(userId, quizId));
+    setIsUserChart(true);
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    dispatch(getLastPassUserAsync(user.user_id));
+  }, [user]);
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -363,7 +383,7 @@ const CompanyTabs = () => {
           )}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        {(!open && !isShow && !isChart) &&
+        {(!open && !isShow && !isChart && !isUserChart) &&
           members.some(m => m.user_id === user.user_id && m.action !== 'member') &&
           <SpeedDial
             ariaLabel="SpeedDial tooltip"
@@ -439,6 +459,28 @@ const CompanyTabs = () => {
           />
         }
 
+        {rating &&
+          <Modal isOpen={isUserChart} onClose={() => setIsUserChart(false)}>
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              borderRadius: '2%',
+              transform: 'translate(-50%, -50%)',
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 4,
+              width: 600,
+              maxHeight: '80vh',
+              overflowY: 'auto',
+            }}>
+              <Typography variant="h5" textAlign="center">Charts</Typography>
+              <BarChart data={{ rating: rating, user_id: user.user_id }} />
+              <StyleButton onClick={() => setIsUserChart(false)} text={'Close'} />
+            </Box>
+          </Modal>
+        }
+
         <Grid item xs={12} md={6}>
           <Typography variant="h5" textAlign="center">Available quizzes</Typography>
           <List dense={true}>
@@ -446,7 +488,17 @@ const CompanyTabs = () => {
               quizzes.map((quiz: QuizzesInfo, index: number) => (
                 <ListItem key={index}
                           secondaryAction={
-                            <>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              {
+                                lastPass?.filter(el => el.quiz_id === quiz.quiz_id)
+                                  .map(q => new Date(q.last_quiz_pass_at))
+                                  .map((d) => (
+                                    <div style={{ marginRight: '10px' }} key={d.getTime()}>
+                                      <div>{`${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`}</div>
+                                      <div>{d.toLocaleTimeString()}</div>
+                                    </div>
+                                  ))
+                              }
                               <Rating
                                 name="read-only"
                                 value={(ratingUsers.find(el => el.quiz_id === quiz.quiz_id)?.rating || 0) * 0.05}
@@ -465,7 +517,10 @@ const CompanyTabs = () => {
                               <IconButton>
                                 <MdQuiz onClick={() => navigate(`/quiz/${quiz.quiz_id}`)} />
                               </IconButton>
-                            </>
+                              <IconButton>
+                                <IoBarChartOutline onClick={() => handleChartUser(user.user_id, quiz.quiz_id)} />
+                              </IconButton>
+                            </div>
                           }>
                   <ListItemText
                     primary={
@@ -476,9 +531,6 @@ const CompanyTabs = () => {
                         )}
                       </div>
                     }
-                  />
-                  <ListItemText
-                    primary={truncateText(quiz.quiz_title ?? '', 10)}
                   />
                 </ListItem>
               ))}
