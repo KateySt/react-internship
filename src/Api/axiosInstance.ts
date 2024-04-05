@@ -14,8 +14,6 @@ import { QuizzesInfo } from 'Types/QuizzesInfo';
 import { NewQuiz } from 'Types/NewQuiz';
 import { Quiz } from 'Types/Quiz';
 import { Question } from 'Types/Question';
-import { RatingAnalytic } from '../Types/RatingAnalytic';
-import { LastPass } from '../Types/LastPass';
 
 const instance: AxiosInstance = axios.create({
   baseURL: process.env.REACT_APP_HOST_BACK as string,
@@ -89,12 +87,6 @@ const companies = {
   listRequests: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/requests_list`),
   listMembers: (id: number) => request.get<Response<{ users: UserInvited[] }>>(`/company/${id}/members_list`),
   listQuizzes: (id: number) => request.get<Response<{ quizzes: QuizzesInfo[] }>>(`/company/${id}/quizzes_list`),
-  listRatingAnalyticQuiz: (companyId: number, quizId: number) => request.get<Response<RatingAnalytic>>(`/company/${companyId}/summary_rating_analytic_for_quiz/${quizId}`),
-  listRatingAnalyticUser: (companyId: number, userId: number) => request.get<Response<RatingAnalytic>>(`/company/${companyId}/summary_rating_analytic_for_user/${userId}`),
-  listLastPassQuiz: (id: number) => request.get<Response<{ users: LastPass[] }>>(`/company/${id}/quizzes_last_pass`),
-  listRatingUser: (companyId:number , userId: number) => request.get<Response<{
-    rating: { rating: number, quiz_id: number }[]
-  }>>(`/company/${companyId}/summary_rating_for_user/${userId}`),
 };
 
 const users = {

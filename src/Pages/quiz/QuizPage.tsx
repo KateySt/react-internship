@@ -40,7 +40,9 @@ const QuizPage = () => {
     if (!quiz) return;
     const transformedQuiz = {
       answers: quiz.questions_list.reduce((acc, question) => {
-        acc[question.question_id.toString()] = question.question_answers[question.question_correct_answer];
+        if (question.question_id !== undefined) {
+          acc[question.question_id.toString()] = question.question_answers[question.question_correct_answer];
+        }
         return acc;
       }, {} as { [key: string]: string }),
     };

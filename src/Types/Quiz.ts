@@ -1,4 +1,5 @@
 import { UserInfo } from './UserInfo';
+import { Question } from './Question';
 
 export interface Quiz extends UserInfo {
   quiz_id: number;
@@ -7,10 +8,5 @@ export interface Quiz extends UserInfo {
   quiz_description: string;
   quiz_frequency: number;
   created_by: UserInfo;
-  questions_list: {
-    question_id: number;
-    question_text: string;
-    question_answers: string[];
-    question_correct_answer: number;
-  }[];
+  questions_list: Question[];
 }

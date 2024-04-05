@@ -45,7 +45,7 @@ export const QuizSlice = createSlice({
       state.quiz.questions_list = state.quiz.questions_list.filter((el) => el.question_id !== action.payload);
     },
     updateQuestion: (state, action: PayloadAction<{
-      question_id: number;
+      question_id?: number;
       question_text: string;
       question_answers: string[];
       question_correct_answer: number;
