@@ -449,7 +449,7 @@ const CompanyTabs = () => {
                             <>
                               <Rating
                                 name="read-only"
-                                value={(ratingUsers.find(el => el.quiz_id === quiz.quiz_id)?.rating || 0) * 0.1}
+                                value={(ratingUsers.find(el => el.quiz_id === quiz.quiz_id)?.rating || 0) * 0.05}
                                 readOnly
                               />
                               {members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) ? (
