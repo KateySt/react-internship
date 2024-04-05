@@ -5,6 +5,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Rating,
   SpeedDial,
   SpeedDialIcon,
   Tab,
@@ -19,9 +20,13 @@ import { addAdminAsync, leaveCompanyAsync, removeAdminAsync } from 'Store/featur
 import {
   getListMembersAsync,
   getListQuizzesAsync,
+  getListRatingQuizAsync,
+  getListRatingStarUserAsync,
   selectCompany,
   selectMembers,
   selectQuizzes,
+  selectRatingQuiz,
+  selectRatingUser,
 } from 'Store/features/company/CompaniesSlice';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { selectUser } from 'Store/features/user/UsersSlice';
@@ -43,6 +48,10 @@ import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember
 import { Quiz } from 'Types/Quiz';
 import { MdQuiz } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import Modal from '../modal';
+import StyleButton from '../button/StyleButton';
+import BarChart from '../chart/BarChart';
+import { FaChartBar } from 'react-icons/fa';
 
 function a11yProps(index: number) {
   return {
@@ -67,15 +76,19 @@ const CompanyTabs = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const quizInfo = useAppSelector(selectQuiz);
+  const ratingUsers = useAppSelector(selectRatingUser);
   const company = useAppSelector(selectCompany);
+  const ratingQuiz = useAppSelector(selectRatingQuiz);
   const members = useAppSelector(selectMembers);
   const user = useAppSelector(selectUser);
   const quizzes = useAppSelector(selectQuizzes);
-  const [open, setOpen] = useState<boolean>(false);
+  const [isChart, setIsChart] = useState<boolean>(false);
   const [isCreateButtonActive, setIsCreateButtonActive] = useState(true);
   const [isUpdateButtonActive, setIsUpdateButtonActive] = useState(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [value, setValue] = useState<number>(0);
+  const currentMember = members.find(el => el.user_id === user.user_id);
+  const [open, setOpen] = useState<boolean>(false);
   const [quiz, setQuiz] = useState<NewQuiz>({
     quiz_name: '',
     quiz_frequency: 1,
@@ -317,6 +330,19 @@ const CompanyTabs = () => {
     }
   };
 
+  const handleChart = async (quizId: number) => {
+    if (!company) return;
+    await dispatch(getListRatingQuizAsync(company.company_id, quizId));
+    setIsChart(true);
+  };
+
+  useEffect(() => {
+    if (!company) return;
+    if (currentMember && (currentMember.action === 'owner' || currentMember.action === 'admin')) {
+      dispatch(getListRatingStarUserAsync(company.company_id, user.user_id));
+    }
+  }, [company]);
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -337,7 +363,7 @@ const CompanyTabs = () => {
           )}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        {(!open && !isShow) &&
+        {(!open && !isShow && !isChart) &&
           members.some(m => m.user_id === user.user_id && m.action !== 'member') &&
           <SpeedDial
             ariaLabel="SpeedDial tooltip"
@@ -358,6 +384,27 @@ const CompanyTabs = () => {
           />
         }
 
+        {ratingQuiz &&
+          <Modal isOpen={isChart} onClose={() => setIsChart(false)}>
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              borderRadius: '2%',
+              transform: 'translate(-50%, -50%)',
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 4,
+              width: 600,
+              maxHeight: '80vh',
+              overflowY: 'auto',
+            }}>
+              <Typography variant="h5" textAlign="center">Charts</Typography>
+              {ratingQuiz.rating.map((el) => <BarChart data={el} />)}
+              <StyleButton onClick={() => setIsChart(false)} text={'Close'} />
+            </Box>
+          </Modal>
+        }
         <ModalQuiz
           open={open}
           handleClose={handleClose}
@@ -400,10 +447,20 @@ const CompanyTabs = () => {
                 <ListItem key={index}
                           secondaryAction={
                             <>
+                              <Rating
+                                name="read-only"
+                                value={(ratingUsers.find(el => el.quiz_id === quiz.quiz_id)?.rating || 0) * 0.1}
+                                readOnly
+                              />
                               {members.some(m => m.user_id === user.user_id && (m.action === 'owner' || m.action === 'admin')) ? (
-                                <IconButton edge="end" aria-label="delete">
-                                  <DeleteIcon onClick={async () => await dispatch(deleteQuizAsync(quiz.quiz_id))} />
-                                </IconButton>
+                                <>
+                                  <IconButton edge="end" aria-label="delete">
+                                    <DeleteIcon onClick={async () => await dispatch(deleteQuizAsync(quiz.quiz_id))} />
+                                  </IconButton>
+                                  <IconButton>
+                                    <FaChartBar onClick={() => handleChart(quiz.quiz_id)} />
+                                  </IconButton>
+                                </>
                               ) : null}
                               <IconButton>
                                 <MdQuiz onClick={() => navigate(`/quiz/${quiz.quiz_id}`)} />
@@ -422,9 +479,6 @@ const CompanyTabs = () => {
                   />
                   <ListItemText
                     primary={truncateText(quiz.quiz_title ?? '', 10)}
-                  />
-                  <ListItemText
-                    primary={truncateText(quiz.quiz_description ?? '', 10)}
                   />
                 </ListItem>
               ))}
