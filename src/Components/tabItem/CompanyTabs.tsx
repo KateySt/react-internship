@@ -44,7 +44,6 @@ import {
   updateQuizAsync,
 } from 'Store/features/quiz/QuizSliece';
 import ModalQuiz from '../quize/ModalQuiz';
-import UseTextDebounce from 'Utils/useTextDebounce';
 import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember';
 import { Quiz } from 'Types/Quiz';
 import { MdQuiz } from 'react-icons/md';
@@ -118,10 +117,9 @@ const CompanyTabs = () => {
 
   const handleQuestionTextUpdate = async (index: number, newText: string) => {
     if (!quizInfo) return;
-    const debouncedText = UseTextDebounce(newText);
     const updatedQuestion = {
       ...quizInfo.questions_list[index],
-      question_text: debouncedText,
+      question_text: newText,
     };
     await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
   };
@@ -142,12 +140,11 @@ const CompanyTabs = () => {
 
   const handleAnswerTextUpdate = async (index: number, answerIndex: number, newText: string) => {
     if (!quizInfo) return;
-    const debouncedText = UseTextDebounce(newText);
     const updatedQuestion = {
       ...quizInfo.questions_list[index],
     };
     updatedQuestion.question_answers = [...updatedQuestion.question_answers];
-    updatedQuestion.question_answers[answerIndex] = debouncedText;
+    updatedQuestion.question_answers[answerIndex] = newText;
     await dispatch(updateQuestionAsync(updatedQuestion.question_id, updatedQuestion));
   };
 
