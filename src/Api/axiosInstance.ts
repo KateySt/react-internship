@@ -121,6 +121,9 @@ const users = {
       last_quiz_pass_at: Date;
     } []
   }>>(`/user/${userId}/quizzes_last_pass`),
+  rating: (userId: number) => request.get<Response<{
+    rating: number
+  }>>(`/user/${userId}/global_rating`),
 };
 
 const actions = {

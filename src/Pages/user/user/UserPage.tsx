@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import {
   deleteProfileAsync,
   getListCompaniesAsync,
+  getRatingAsync,
   getUserAsync,
   selectCurrentUser,
   selectUser,
@@ -124,15 +125,13 @@ const UserPage = () => {
 
   useEffect(() => {
     dispatch(getUserAsync(Number(id)));
-  }, [id]);
-
-  useEffect(() => {
     if (currentUser && user.user_id === currentUser.user_id) {
+      dispatch(getRatingAsync(Number(id)));
       dispatch(getListCompaniesAsync(Number(id)));
       dispatch(getListInvitedCompanyAsync(Number(id)));
       dispatch(getListRequestsCompaniesAsync(Number(id)));
     }
-  }, [companyId]);
+  }, [id, companyId]);
 
   const handleAcceptInviteAction = async (actionId: number) => {
     await dispatch(acceptInviteAsync(actionId));
@@ -167,7 +166,7 @@ const UserPage = () => {
               </Grid>
             </Grid>
           </>}
-          <Grid item xs={12} sm={6} md={4} sx={{ padding: 2, textAlign: 'center' }}>
+          <Grid item xs={12} sm={6} md={4}>
             {isEdit ?
               <UserEditForm
                 initialValuesUpdateInfo={{
