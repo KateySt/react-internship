@@ -7,6 +7,7 @@ import { User } from 'Types/User';
 import IconButton from '@mui/material/IconButton';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import {
+  getListLastPassUserAsync,
   getListRatingUserAsync,
   selectCompany,
   selectLastPass,
@@ -17,7 +18,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '../modal';
 import BarChart from '../chart/BarChart';
 import StyleButton from '../button/StyleButton';
-import { getListLastPassUserAsync } from '../../Store/features/company/CompaniesSlice';
+import DateLastPass from '../date/DateLastPass';
 
 const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 const TableCompanyMember: React.FC<{
@@ -107,19 +108,15 @@ const TableCompanyMember: React.FC<{
                 {currentMember && (currentMember.action === 'owner' || currentMember.action === 'admin') &&
                   <>
                     <TableCell>
-                      {lastPass?.filter(el => el.user_id === member.user_id)
-                        .map(el => el.quizzes)
-                        .flat()
-                        .map(q => new Date(q.last_quiz_pass_at))
-                        .sort((a, b) => b.getTime() - a.getTime())
-                        .map((d, index) => (
-                          index === 0 && (
-                            <div key={d.getTime()}>
-                              <div>{`${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`}</div>
-                              <div>{d.toLocaleTimeString()}</div>
-                            </div>
-                          )
-                        ))}
+                      {
+                        lastPass?.flatMap(el => el.quizzes
+                          .map(q => new Date(q.last_quiz_pass_at)))
+                          .sort((a, b) => b.getTime() - a.getTime())
+                          .map((d, index) => (
+                            index === 0 &&
+                            <DateLastPass date={d} />
+                          ))
+                      }
                     </TableCell>
                     <TableCell>
                       {(user.user_id !== member.user_id && member.action !== 'owner') && (
