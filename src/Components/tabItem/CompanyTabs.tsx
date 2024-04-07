@@ -59,6 +59,7 @@ import Modal from '../modal';
 import StyleButton from '../button/StyleButton';
 import BarChart from '../chart/BarChart';
 import { FaChartBar } from 'react-icons/fa';
+import DateLastPass from '../date/DateLastPass';
 
 function a11yProps(index: number) {
   return {
@@ -491,13 +492,7 @@ const CompanyTabs = () => {
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                               {
                                 lastPass?.filter(el => el.quiz_id === quiz.quiz_id)
-                                  .map(q => new Date(q.last_quiz_pass_at))
-                                  .map((d) => (
-                                    <div style={{ marginRight: '10px' }} key={d.getTime()}>
-                                      <div>{`${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`}</div>
-                                      <div>{d.toLocaleTimeString()}</div>
-                                    </div>
-                                  ))
+                                  .map(q => <DateLastPass date={new Date(q.last_quiz_pass_at)} />)
                               }
                               <Rating
                                 name="read-only"
