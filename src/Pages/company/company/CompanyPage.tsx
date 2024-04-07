@@ -5,28 +5,25 @@ import {
   deleteCompanyAsync,
   getCompanyAsync,
   getListMembersAsync,
+  getListQuizzesAsync,
   selectCompany,
   selectMembers,
   setNewAvatarAsync,
   updateInfoCompanyAsync,
 } from 'Store/features/company/CompaniesSlice';
-import { Avatar, Grid, Typography } from '@mui/material';
+import { Alert, Avatar, Grid, Typography } from '@mui/material';
 import { IoIosArrowBack } from 'react-icons/io';
 import StyleButton from 'Components/button/StyleButton';
 import { getListUsersAsync, selectUser, selectUsers } from 'Store/features/user/UsersSlice';
 import PhotoUpload from 'Components/updatePhoto/PhotoUpload';
 import { UpdateCompany } from 'Types/UpdateCompany';
 import CompanyEditForm from 'Components/company/CompanyEditForm';
-import { FcInvite } from 'react-icons/fc';
 import {
   acceptRequestAsync,
-  addAdminAsync,
   createActionFromCompanyAsync,
   declineActionAsync,
   getListInvitedUsersAsync,
   getListRequestsUsersAsync,
-  leaveCompanyAsync,
-  removeAdminAsync,
   selectInvitedUser,
   selectRequestsUser,
 } from 'Store/features/action/ActionSlice';
@@ -36,14 +33,15 @@ import Action from 'Components/action/Action';
 import { FaCodePullRequest } from 'react-icons/fa6';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { MdDeleteForever } from 'react-icons/md';
-import TableCompanyMember from 'Components/tableCompanyMember/TableCompanyMember';
+import { RiMailSendFill } from 'react-icons/ri';
+import CompanyTabs from 'Components/tabItem/CompanyTabs';
+import { selectResult, setResultInfo } from '../../../Store/features/quiz/QuizSliece';
 
 const CompanyPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const company = useAppSelector(selectCompany);
-  const members = useAppSelector(selectMembers);
   const user = useAppSelector(selectUser);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [photoData, setPhotoData] = useState<File | null>(null);
@@ -55,24 +53,19 @@ const CompanyPage = () => {
   const invitedUsers = useAppSelector(selectInvitedUser);
   const [param, setParam] = useState<{ page: number, page_size: number }>({ page: 1, page_size: 10 });
   const userRequests = useAppSelector(selectRequestsUser);
-  const [loading, setLoading] = useState<boolean>(false);
-  const handleChangeSwitch = async (event: React.ChangeEvent<HTMLInputElement>, actionId: number) => {
-    if (loading) return;
-    setLoading(true);
+  const members = useAppSelector(selectMembers);
+  const [showAlert, setShowAlert] = useState(false);
+  const result = useAppSelector(selectResult);
 
-    try {
-      if (event.target.checked) {
-        await dispatch(addAdminAsync(actionId));
-      } else {
-        await dispatch(removeAdminAsync(actionId));
-      }
-      await dispatch(getListMembersAsync(Number(id)));
-    } catch (error) {
-      console.error('Error occurred:', error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (result) {
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        dispatch(setResultInfo(null));
+      }, 10000);
     }
-  };
+  }, [result]);
 
   useEffect(() => {
     dispatch(getListUsersAsync(param));
@@ -87,11 +80,12 @@ const CompanyPage = () => {
   }, [users]);
 
   useEffect(() => {
-    if (company && user.user_id === company.company_owner.user_id) {
-      dispatch(getListInvitedUsersAsync(company.company_id));
-      dispatch(getListRequestsUsersAsync(company.company_id));
-      dispatch(getListMembersAsync(company.company_id));
-    }
+    if (!company) return;
+    dispatch(getListMembersAsync(company.company_id));
+    dispatch(getListQuizzesAsync(company.company_id));
+    if (user.user_id !== company.company_owner.user_id) return;
+    dispatch(getListInvitedUsersAsync(company.company_id));
+    dispatch(getListRequestsUsersAsync(company.company_id));
   }, [company]);
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -135,14 +129,6 @@ const CompanyPage = () => {
     dispatch(getCompanyAsync(Number(id)));
   }, [id]);
 
-  const handleDelete = async () => {
-    if (!company) return;
-    if (window.confirm('Are you sure you want to delete this company?')) {
-      await dispatch(deleteCompanyAsync(company.company_id));
-      navigate('/companies');
-    }
-  };
-
   const handleBlockRequest = async (id: number) => {
     await dispatch(declineActionAsync(id));
   };
@@ -165,15 +151,29 @@ const CompanyPage = () => {
     await dispatch(getCompanyAsync(Number(id)));
   };
 
-  const handleDeleteUser = async (actionId: number) => {
-    if (company && user.user_id !== company.company_owner.user_id) return;
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      await dispatch(leaveCompanyAsync(actionId));
+  const handleDelete = async () => {
+    if (!company) return;
+    if (window.confirm('Are you sure you want to delete this company?')) {
+      await dispatch(deleteCompanyAsync(company.company_id));
+      navigate('/companies');
     }
   };
 
   return (
     <>
+      {showAlert && result && (
+        <Alert severity="success" sx={{
+          position: 'fixed',
+          zIndex: 9999,
+          button: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'rgba(0,255,0,0.18)',
+        }}
+               onClose={() => setShowAlert(false)}>
+          This is your success {result.result_score}.
+        </Alert>
+      )}
       {company && (
         <Grid justifyContent="center" margin={3}>
           <IoIosArrowBack onClick={() => navigate(-1)} size={36} />
@@ -186,7 +186,7 @@ const CompanyPage = () => {
                     <MdDeleteForever onClick={handleDelete} size={34} />
                   </Grid>
                   <Grid item xs={2}>
-                    <FcInvite onClick={() => setIsShowSendInvite(!isShowSendInvite)} size={36} />
+                    <RiMailSendFill onClick={() => setIsShowSendInvite(!isShowSendInvite)} size={34} />
                   </Grid>
                   <Grid item xs={2}>
                     <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={30} />
@@ -224,15 +224,9 @@ const CompanyPage = () => {
                     )}
                   </Grid>
                 </Grid>
-                {user.user_id === company.company_owner.user_id &&
-                  members &&
-                  (
-                    <TableCompanyMember
-                      members={members}
-                      user={user}
-                      handleChangeSwitch={handleChangeSwitch}
-                      handleDeleteUser={handleDeleteUser} />
-                  )}
+                {members &&
+                  members.some(el => el.user_id === user.user_id) &&
+                  <CompanyTabs />}
                 <SendRequest
                   handleCloseModal={handleCloseModal}
                   isShow={isShowSendInvite}

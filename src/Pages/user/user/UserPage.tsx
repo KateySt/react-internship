@@ -34,7 +34,7 @@ import {
 import Action from 'Components/action/Action';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { getListCompanyAsync, selectCompanies } from 'Store/features/company/CompaniesSlice';
-import { FcInvite } from 'react-icons/fc';
+import { RiMailSendFill } from 'react-icons/ri';
 import { FaCodePullRequest } from 'react-icons/fa6';
 import SendRequest from 'Components/action/SendRequest';
 
@@ -157,7 +157,7 @@ const UserPage = () => {
                 <MdDeleteForever onClick={handleDelete} size={36} />
               </Grid>
               <Grid item xs={2}>
-                <FcInvite onClick={() => setIsShow(!isShow)} size={36} />
+                <RiMailSendFill onClick={() => setIsShow(!isShow)} size={36} />
               </Grid>
               <Grid item xs={2}>
                 <FaThList onClick={() => setIsShowListInvite(!isShowListInvite)} size={32} />
