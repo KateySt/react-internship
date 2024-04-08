@@ -1,9 +1,26 @@
 import React from 'react';
-import { Avatar, List, ListItem, ListItemText, Typography } from '@mui/material';
+import {
+  Avatar,
+  Link,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Rating,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { User } from 'Types/User';
 import 'react-phone-input-2/lib/material.css';
 import StyleButton from '../button/StyleButton';
 import { CompanyInvited } from 'Types/CompanyInvited';
+import { useAppSelector } from 'Store/hooks';
+import { selectRatingCompany } from 'Store/features/user/UsersSlice';
 
 interface UserInfoProps {
   user: User;
@@ -13,7 +30,15 @@ interface UserInfoProps {
   handleLeaveCompany: (id: number) => void;
 }
 
+function truncateStringToScreenWidth(str: string) {
+  const screenWidth = window.innerWidth;
+  const charWidth = 10;
+  const maxChars = Math.floor(screenWidth / charWidth);
+  return str.slice(0, maxChars) + '...';
+}
+
 const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick, companies, handleLeaveCompany }) => {
+  const rating = useAppSelector(selectRatingCompany);
   return (
     <>
       {!!user.user_avatar ? (
@@ -37,30 +62,51 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isEditable, onEditClick, comp
       <Typography variant="body1" color="textSecondary">
         status: {user.user_status}
       </Typography>
+      {isEditable && <Rating
+        name="read-only"
+        value={rating * 0.05}
+        readOnly
+      />}
       <Typography variant="body1" color="textSecondary">
         links:
         <List>
           {user.user_links && user.user_links.map((link, index) => (
             <ListItem key={index}>
-              <ListItemText primary={link} />
+              <ListItemText>
+                <Link href={link} underline="none">
+                  {truncateStringToScreenWidth(link)}
+                </Link>
+              </ListItemText>
             </ListItem>
           ))}
         </List>
       </Typography>
       {isEditable && companies.length > 0 && (
-          <Typography variant="body1" color="textSecondary">
-            companies:
-            <List>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Company Name</TableCell>
+                <TableCell>Company Title</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {companies.map((company: CompanyInvited, index) => (
-                <ListItem key={index} >
-                  <ListItemText primary={company.company_name} />
-                  <ListItemText primary={company.company_title} />
-                  <ListItemText primary={'Leave'} onClick={() => handleLeaveCompany(company.action_id)} />
-                </ListItem>
+                <TableRow key={index}>
+                  <TableCell>{company.company_name}</TableCell>
+                  <TableCell>{company.company_title}</TableCell>
+                  <TableCell>
+                    {company.action !== 'owner' && (
+                      <StyleButton text={'Leave'} onClick={() => handleLeaveCompany(company.action_id)} />
+                    )}
+                  </TableCell>
+                </TableRow>
               ))}
-            </List>
-          </Typography>
-        )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       {isEditable && <StyleButton text={'Edit'} onClick={onEditClick} />}
     </>
   );

@@ -21,6 +21,7 @@ export interface UserState {
     quiz_id: number;
     last_quiz_pass_at: Date;
   } [];
+  ratingCompany: number;
 }
 
 const initialState: UserState = {
@@ -39,6 +40,7 @@ const initialState: UserState = {
   companies: [],
   rating: null,
   lastPass: [],
+  ratingCompany: 0,
 };
 
 export const UsersSlice = createSlice({
@@ -78,10 +80,14 @@ export const UsersSlice = createSlice({
     setLastPass: (state, action: PayloadAction<{ quizzes: { quiz_id: number; last_quiz_pass_at: Date; } [] }>) => {
       state.lastPass = action.payload.quizzes;
     },
+    setRatingCompany: (state, action: PayloadAction<number>) => {
+      state.ratingCompany = action.payload;
+    },
   },
 });
 
 export const {
+  setRatingCompany,
   setLastPass,
   setUser,
   setCompanies,
@@ -98,6 +104,7 @@ export const {
 export const selectUserCompanies = (state: RootState) => state.users.companies;
 export const selectUser = (state: RootState) => state.users.user;
 export const selectRating = (state: RootState) => state.users.rating;
+export const selectRatingCompany = (state: RootState) => state.users.ratingCompany;
 export const selectLastPass = (state: RootState) => state.users.lastPass;
 export const selectCurrentUser = (state: RootState) => state.users.currentUser;
 export const selectUsers = (state: RootState) => state.users.users;
@@ -160,6 +167,10 @@ export const getRatingAnalyticUserAsync = (userId: number, quizId: number) => as
 
 export const getLastPassUserAsync = (userId: number) => async (dispatch: AppDispatch) => {
   await api.users.listLastPassQuiz(userId).then(el => dispatch(setLastPass(el.result)));
+};
+
+export const getRatingAsync = (userId: number) => async (dispatch: AppDispatch) => {
+  await api.users.rating(userId).then(el => dispatch(setRatingCompany(el.result.rating)));
 };
 
 export default UsersSlice.reducer;
