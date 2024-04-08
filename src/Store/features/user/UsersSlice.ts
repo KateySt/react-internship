@@ -7,6 +7,8 @@ import { NewUser } from 'Types/NewUser';
 import { UpdateUserInfo } from 'Types/UpdateUserInfo';
 import { CompanyInvited } from 'Types/CompanyInvited';
 
+import { RatingData } from 'Types/RatingData';
+
 export interface UserState {
   user: User,
   accessToken: string | null;
@@ -14,6 +16,11 @@ export interface UserState {
   isLogin: boolean;
   currentUser: User | null;
   companies: CompanyInvited[];
+  rating: RatingData[] | null;
+  lastPass: {
+    quiz_id: number;
+    last_quiz_pass_at: Date;
+  } [];
 }
 
 const initialState: UserState = {
@@ -30,6 +37,8 @@ const initialState: UserState = {
   isLogin: false,
   currentUser: null,
   companies: [],
+  rating: null,
+  lastPass: [],
 };
 
 export const UsersSlice = createSlice({
@@ -63,10 +72,17 @@ export const UsersSlice = createSlice({
     leaveCompany: (state, action: PayloadAction<number>) => {
       state.companies = state.companies.filter(company => company.action_id !== action.payload);
     },
+    setRatingUser: (state, action: PayloadAction<RatingData[]>) => {
+      state.rating = action.payload;
+    },
+    setLastPass: (state, action: PayloadAction<{ quizzes: { quiz_id: number; last_quiz_pass_at: Date; } [] }>) => {
+      state.lastPass = action.payload.quizzes;
+    },
   },
 });
 
 export const {
+  setLastPass,
   setUser,
   setCompanies,
   setInfo,
@@ -74,12 +90,15 @@ export const {
   setProfile,
   setIsLogin,
   setToken,
+  setRatingUser,
   setUsers,
   leaveCompany,
 } = UsersSlice.actions;
 
 export const selectUserCompanies = (state: RootState) => state.users.companies;
 export const selectUser = (state: RootState) => state.users.user;
+export const selectRating = (state: RootState) => state.users.rating;
+export const selectLastPass = (state: RootState) => state.users.lastPass;
 export const selectCurrentUser = (state: RootState) => state.users.currentUser;
 export const selectUsers = (state: RootState) => state.users.users;
 export const selectIsLogin = (state: RootState) => state.users.isLogin;
@@ -134,4 +153,13 @@ export const createUserAsync = (user: NewUser) => async () => {
 export const getListCompaniesAsync = (id: number) => async (dispatch: AppDispatch) => {
   await api.users.listCompanies(id).then(el => dispatch(setCompanies(el.result.companies)));
 };
+
+export const getRatingAnalyticUserAsync = (userId: number, quizId: number) => async (dispatch: AppDispatch) => {
+  await api.users.listRatingAnalyticUser(userId, quizId).then(el => dispatch(setRatingUser(el.result.rating)));
+};
+
+export const getLastPassUserAsync = (userId: number) => async (dispatch: AppDispatch) => {
+  await api.users.listLastPassQuiz(userId).then(el => dispatch(setLastPass(el.result)));
+};
+
 export default UsersSlice.reducer;
